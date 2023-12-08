@@ -100,7 +100,6 @@ const LoginPage = () => {
       body: JSON.stringify({ email: values.email, password: values.password }),
     });
     if (response.ok) {
-      const data = await response.json();
       router.push('/');
     } else {
       const errorData = await response.json();

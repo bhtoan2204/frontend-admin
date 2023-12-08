@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return
     }
     try {
-        const {email, password} = req.body;
+        const { email, password } = req.body;
 
         const apiResponse = await fetch('http://localhost:8080/auth/local/login', {
             method: 'POST',
@@ -33,12 +33,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 maxAge: 3 * 24 * 60 * 60, // 3 days
                 path: '/',
             });
-    
-            setCookie({ res }, 'user', JSON.stringify(data.user), {
-                maxAge: 1 * 24 * 60 * 60, // 1 day
-                path: '/',
-            });
-            
         
             res.status(200).json({ 
                 message: 'Đăng nhập thành công',

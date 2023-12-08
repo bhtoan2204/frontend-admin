@@ -50,6 +50,10 @@ const UserDropdown = () => {
     setAnchorEl(null)
   }
 
+  const handleLogout = () => {
+    
+  }
+
   const styles = {
     py: 2,
     px: 4,
@@ -121,7 +125,7 @@ const UserDropdown = () => {
         </MenuItem>
         <Divider />
         <MenuItem sx={{ py: 2 }} onClick={() => handleDropdownClose('/pages/login')}>
-          <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
+          <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} onClick={handleLogout}/>
           Logout
         </MenuItem>
       </Menu>
