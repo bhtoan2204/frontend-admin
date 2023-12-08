@@ -40,7 +40,6 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 
 
-
 interface State {
   email: string
   password: string
@@ -101,11 +100,6 @@ const LoginPage = () => {
       body: JSON.stringify({ email: values.email, password: values.password }),
     });
     if (response.ok) {
-      const data = await response.json();
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('accessToken', data.accessToken);
-        localStorage.setItem('refreshToken', data.refreshToken);
-      }
       router.push('/');
     } else {
       const errorData = await response.json();
