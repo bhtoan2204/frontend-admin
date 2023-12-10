@@ -51,7 +51,7 @@ const UserDropdown = () => {
   }
 
   const handleLogout = () => {
-    
+
   }
 
   const styles = {
@@ -117,15 +117,8 @@ const UserDropdown = () => {
           </Box>
         </MenuItem>
         <Divider />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <CogOutline sx={{ marginRight: 2 }} />
-            Settings
-          </Box>
-        </MenuItem>
-        <Divider />
         <MenuItem sx={{ py: 2 }} onClick={() => handleDropdownClose('/pages/login')}>
-          <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} onClick={handleLogout}/>
+          <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} onClick={handleLogout} />
           Logout
         </MenuItem>
       </Menu>

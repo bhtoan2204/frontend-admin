@@ -57,9 +57,23 @@ function Row(props: { row: ReturnType<typeof createData> }) {
     const { row } = props;
     const [open, setOpen] = useState(false);
 
+    const pushRows = () => {
+        const userId = row._id.toString();
+        if (userId === '') return;
+        window.open(`/user-detail/${userId}`, '_blank')
+    }
+
     return (
         <Fragment>
-            <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+            <TableRow
+                sx={{
+                    "& > *": { borderBottom: "unset" },
+                    "&:hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.08)",
+                        cursor: "pointer"
+                    },
+                }}
+            >
                 <TableCell>
                     <IconButton
                         aria-label="expand row"
@@ -69,28 +83,32 @@ function Row(props: { row: ReturnType<typeof createData> }) {
                         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                 </TableCell>
-                <TableCell component="th" scope="row">
+
+                <TableCell component="th" scope="row" onClick={pushRows}>
+                    <img src={row.avatar} alt="avatar" width="50px" height="50px" />
+                </TableCell>
+                <TableCell component="th" scope="row" onClick={pushRows}>
                     {row.fullname}
                 </TableCell>
-                <TableCell align="right">{row.email}</TableCell>
-                <TableCell align="right">{row.role}</TableCell>
-                <TableCell align="right">{row.login_type}</TableCell>
-                <TableCell align="right">{row.is_ban.toString()}</TableCell>
+                <TableCell align="right" onClick={pushRows}>{row.email}</TableCell>
+                <TableCell align="center" onClick={pushRows}>{row.role}</TableCell>
+                <TableCell align="center" onClick={pushRows}>{row.login_type}</TableCell>
+                <TableCell align="center" onClick={pushRows}>{row.is_ban.toString()}</TableCell>
             </TableRow>
             <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0, }} colSpan={7}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
                             <Typography variant="h6" gutterBottom component="div">
                                 Joined Classes
                             </Typography>
-                            <Table size="small" aria-label="purchases">
+                            <Table size="medium" aria-label="purchases">
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell>Date</TableCell>
-                                        <TableCell>Customer</TableCell>
-                                        <TableCell align="right">Amount</TableCell>
-                                        <TableCell align="right">Total price ($)</TableCell>
+                                        <TableCell>Class Name</TableCell>
+                                        <TableCell>Class Description</TableCell>
+                                        <TableCell align="center">Is Active</TableCell>
+                                        <TableCell align="right">Class ID</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -100,10 +118,10 @@ function Row(props: { row: ReturnType<typeof createData> }) {
                                                 {clazz.class_name}
                                             </TableCell>
                                             <TableCell>{clazz.class_description}</TableCell>
-                                            <TableCell align="right">{clazz.class_description}</TableCell>
-                                            {/* <TableCell align="right">
-                                                {Math.round(historyRow.amount * row.price * 100) / 100}
-                                            </TableCell> */}
+                                            <TableCell align="center">True</TableCell>
+                                            <TableCell align="right">
+                                                {clazz.class_id.toString()}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -168,8 +186,7 @@ export default function TableColapsiblePaginate() {
             }
         }
         fetchUserData()
-
-    }, [page, rowsPerPage, rows])
+    }, [page, rowsPerPage])
 
     return (
         <TableContainer component={Paper}>
@@ -177,16 +194,17 @@ export default function TableColapsiblePaginate() {
                 <TableHead>
                     <TableRow>
                         <TableCell />
+                        <TableCell>Avatar</TableCell>
                         <TableCell>Fullname</TableCell>
                         <TableCell align="right">Email</TableCell>
-                        <TableCell align="right">Role</TableCell>
-                        <TableCell align="right">Login type</TableCell>
-                        <TableCell align="right">Is ban</TableCell>
+                        <TableCell align="center">Role</TableCell>
+                        <TableCell align="center">Login type</TableCell>
+                        <TableCell align="center">Is ban</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {currentRows.map((row) => (
-                        <Row key={row.fullname} row={row} />
+                        <Row key={row._id.toString()} row={row} />
                     ))}
                 </TableBody>
             </Table>
