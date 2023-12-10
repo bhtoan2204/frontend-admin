@@ -22,6 +22,7 @@ import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
 import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
 import SalesByCountries from 'src/views/dashboard/SalesByCountries'
 import TableStickyHeader from 'src/views/tables/TableStickyHeader'
+import TableColapsiblePaginate from 'src/views/tables/TableColapsiblePaginate'
 
 const Dashboard = () => {
   return (
@@ -36,7 +37,9 @@ const Dashboard = () => {
         <Grid item xs={12} md={6} lg={4}>
         </Grid>
         <Grid item xs={12}>
-          {/* <Table /> */}
+          <TableColapsiblePaginate />
+        </Grid>
+        <Grid item xs={12}>
           <TableStickyHeader />
         </Grid>
       </Grid>
