@@ -13,6 +13,10 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
+import { useRouter } from "next/router";
+import { InputAdornment, TextField } from "@mui/material";
+import { Magnify } from "mdi-material-ui";
+import { Search } from "@mui/icons-material";
 
 interface RowType {
     _id: string,
@@ -56,11 +60,12 @@ function createData(
 function Row(props: { row: ReturnType<typeof createData> }) {
     const { row } = props;
     const [open, setOpen] = useState(false);
+    const router = useRouter();
 
     const pushRows = () => {
         const userId = row._id.toString();
         if (userId === '') return;
-        window.open(`/user-detail/${userId}`, '_blank')
+        router.push(`/user-detail/${userId}`)
     }
 
     return (
@@ -190,6 +195,24 @@ export default function TableColapsiblePaginate() {
 
     return (
         <TableContainer component={Paper}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ margin: 4 }}>
+                    <Typography variant="h6">List of Users</Typography>
+                </Box>
+                <Box sx={{ margin: 4, display: 'flex', justifyContent: 'flex-end' }}>
+                    <TextField
+                        id="search-bar"
+                        className="text"
+                        label="Enter fullname or email"
+                        variant="outlined"
+                        placeholder="Search..."
+                        size="small"
+                    />
+                    <IconButton type="submit" aria-label="search">
+                        <Search style={{ fill: "blue" }} />
+                    </IconButton>
+                </Box>
+            </Box>
             <Table aria-label="collapsible table">
                 <TableHead>
                     <TableRow>
