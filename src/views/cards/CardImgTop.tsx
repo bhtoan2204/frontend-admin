@@ -7,14 +7,13 @@ import CardContent from '@mui/material/CardContent'
 const CardImgTop = () => {
   return (
     <Card>
-      <CardMedia sx={{ height: '14.5625rem' }} image='/images/cards/glass-house.png' />
+      <CardMedia sx={{ height: '14.5625rem' }} image='/images/cards/jungle.jpg' />
       <CardContent>
         <Typography variant='h6' sx={{ marginBottom: 2 }}>
-          Influencing The Influencer
+          Chào bạn tới với trang quản lý lớp học
         </Typography>
         <Typography variant='body2'>
-          Cancun is back, better than ever! Over a hundred Mexico resorts have reopened and the state tourism minister
-          predicts Cancun will draw as many visitors in 2006 as it did two years ago.
+          Bạn không thể chỉnh sửa chi tiết lớp học. Bạn có thể bật hoặc tắt hoạt động của lớp.
         </Typography>
       </CardContent>
     </Card>

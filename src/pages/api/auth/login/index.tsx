@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next/dist/shared/lib/utils";
 import { setCookie } from 'nookies';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<any> {
-    if(req.method !== 'POST') {
+    if (req.method !== 'POST') {
         res.status(405).json({ error: 'Method not allowed' })
         return
     }
@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 password: password
             })
         });
-        
+
         if (apiResponse.ok) {
             const data = await apiResponse.json();
 
@@ -28,16 +28,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 maxAge: 1 * 24 * 60 * 60, // 1 day
                 path: '/',
             });
-    
+
             setCookie({ res }, 'refreshToken', data.refreshToken, {
                 maxAge: 3 * 24 * 60 * 60, // 3 days
                 path: '/',
             });
-        
-            res.status(200).json({ 
+
+            res.status(200).json({
                 message: 'Đăng nhập thành công',
                 accessToken: data.accessToken,
-                refreshToken: data.refreshToken });
+                refreshToken: data.refreshToken
+            });
         }
         else {
             const errorData = await apiResponse.json();

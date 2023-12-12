@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -13,7 +13,6 @@ import CardContent from '@mui/material/CardContent'
 
 // ** Icons Imports
 import TrendingUp from 'mdi-material-ui/TrendingUp'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import DotsVertical from 'mdi-material-ui/DotsVertical'
 import CellphoneLink from 'mdi-material-ui/CellphoneLink'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
@@ -28,36 +27,9 @@ interface DataType {
   icon: ReactElement
 }
 
-const salesData: DataType[] = [
-  {
-    stats: '245k',
-    title: 'Sales',
-    color: 'primary',
-    icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '12.5k',
-    title: 'Customers',
-    color: 'success',
-    icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '1.54k',
-    color: 'warning',
-    title: 'Products',
-    icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
-  },
-  {
-    stats: '$88k',
-    color: 'info',
-    title: 'Revenue',
-    icon: <CurrencyUsd sx={{ fontSize: '1.75rem' }} />
-  }
-]
-
-const renderStats = () => {
+const renderStats = (salesData: DataType[]) => {
   return salesData.map((item: DataType, index: number) => (
-    <Grid item xs={12} sm={3} key={index}>
+    <Grid item xs={12} sm={4} key={index}>
       <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
         <Avatar
           variant='rounded'
@@ -82,22 +54,67 @@ const renderStats = () => {
 }
 
 const StatisticsCard = () => {
+  const [salesData, setSalesData] = useState<DataType[]>([])
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const getStatistics = () => {
+    const fetchData = (async () => {
+      const response = await fetch('/api/statistics', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      })
+      const data = await response.json()
+      const newData: DataType[] = [
+        {
+          stats: data.data.totalTeacher,
+          title: 'Total Teachers',
+          color: 'primary',
+          icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+        },
+        {
+          stats: data.data.totalStudent,
+          title: 'Total Students',
+          color: 'success',
+          icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
+        },
+        {
+          stats: data.data.totalClass,
+          color: 'warning',
+          title: 'Total Classes',
+          icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
+        }
+      ]
+      setSalesData(newData)
+    })
+    fetchData()
+  }
+  useEffect(() => {
+    getStatistics()
+    setIsLoading(false)
+  }, [isLoading])
   return (
     <Card>
       <CardHeader
-        title='Statistics Card'
+        title='Statistics'
         action={
           <IconButton size='small' aria-label='settings' className='card-more-options' sx={{ color: 'text.secondary' }}>
             <DotsVertical />
           </IconButton>
         }
         subheader={
-          <Typography variant='body2'>
-            <Box component='span' sx={{ fontWeight: 600, color: 'text.primary' }}>
-              Total 48.5% growth
-            </Box>{' '}
-            😎 this month
-          </Typography>
+          <Box
+            component="img"
+            sx={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+            alt="The house from the offer."
+            src="/images/wallpaper/2.jpg"
+          />
         }
         titleTypographyProps={{
           sx: {
@@ -109,7 +126,7 @@ const StatisticsCard = () => {
       />
       <CardContent sx={{ pt: theme => `${theme.spacing(3)} !important` }}>
         <Grid container spacing={[5, 0]}>
-          {renderStats()}
+          {renderStats(salesData)}
         </Grid>
       </CardContent>
     </Card>

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { ChangeEvent, Fragment, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
@@ -14,12 +14,11 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import TablePagination from "@mui/material/TablePagination";
 import { useRouter } from "next/router";
-import { InputAdornment, TextField } from "@mui/material";
-import { Magnify } from "mdi-material-ui";
+import { TextField } from "@mui/material";
 import { Search } from "@mui/icons-material";
 
 interface RowType {
-    _id: string,
+    id: string,
     fullname: string,
     email: string,
     role: string,
@@ -36,7 +35,7 @@ type Class = {
 }
 
 function createData(
-    _id: string,
+    id: string,
     fullname: string,
     email: string,
     role: string,
@@ -46,7 +45,7 @@ function createData(
     classes: Class[]
 ) {
     return {
-        _id,
+        id,
         fullname,
         email,
         role,
@@ -63,7 +62,7 @@ function Row(props: { row: ReturnType<typeof createData> }) {
     const router = useRouter();
 
     const pushRows = () => {
-        const userId = row._id.toString();
+        const userId = row.id;
         if (userId === '') return;
         router.push(`/user-detail/${userId}`)
     }
@@ -143,6 +142,7 @@ export default function TableColapsiblePaginate() {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [rows, setRows] = useState<RowType[]>([]);
+    const [searchValue, setSearchValue] = useState('');
 
     const currentRows = rows.filter((r, ind) => {
         return ind >= rowsPerPage * page && ind < rowsPerPage * (page + 1);
@@ -182,6 +182,42 @@ export default function TableColapsiblePaginate() {
         }
     };
 
+    const handleSearch = async () => {
+        if (searchValue === '') {
+            const data = await getUserPerpage();
+            if (data.data) {
+                const arrData = data.data;
+                setRows(arrData);
+            }
+        }
+        else {
+            const apiResponse = await fetch('/api/userManage/searchUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    text: searchValue,
+                    page: page + 1,
+                    perPage: rowsPerPage
+                })
+            });
+
+            if (apiResponse.ok) {
+                const data = await apiResponse.json();
+                if (data.data) {
+                    const arrData = data.data;
+                    setRows(arrData);
+                }
+            }
+            else {
+                const errorData = await apiResponse.json();
+                return errorData;
+            }
+        }
+    };
+
     useEffect(() => {
         const fetchUserData = async () => {
             const data = await getUserPerpage();
@@ -207,8 +243,9 @@ export default function TableColapsiblePaginate() {
                         variant="outlined"
                         placeholder="Search..."
                         size="small"
+                        onChange={(e) => setSearchValue(e.target.value)}
                     />
-                    <IconButton type="submit" aria-label="search">
+                    <IconButton type="submit" aria-label="search" onClick={handleSearch}>
                         <Search style={{ fill: "blue" }} />
                     </IconButton>
                 </Box>
@@ -227,7 +264,7 @@ export default function TableColapsiblePaginate() {
                 </TableHead>
                 <TableBody>
                     {currentRows.map((row) => (
-                        <Row key={row._id.toString()} row={row} />
+                        <Row key={row.id} row={row} />
                     ))}
                 </TableBody>
             </Table>
