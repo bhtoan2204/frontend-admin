@@ -3,7 +3,7 @@ import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
 import Trophy from 'src/views/dashboard/Trophy'
 import StatisticsCard from 'src/views/dashboard/StatisticsCard'
 import TableColapsiblePaginate from 'src/views/tables/TableColapsiblePaginate'
-import TableStickyHeader from 'src/views/tables/TableStickyHeader'
+import ClassManagerTable from 'src/views/tables/TableStickyHeader'
 import CardImgTop from 'src/views/cards/CardImgTop'
 
 const ClassManager = () => {
@@ -16,7 +16,7 @@ const ClassManager = () => {
                 <Grid item xs={12} md={6} lg={4}>
                 </Grid>
                 <Grid item xs={12}>
-                    <TableStickyHeader />
+                    <ClassManagerTable />
                 </Grid>
             </Grid>
         </ApexChartWrapper>

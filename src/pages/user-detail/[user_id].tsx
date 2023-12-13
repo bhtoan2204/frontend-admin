@@ -6,12 +6,9 @@ import TextField from '@mui/material/TextField'
 import { Alert, AlertTitle, Card, CardHeader, CircularProgress, Divider, IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, styled } from "@mui/material";
 import AccountOutline from "mdi-material-ui/AccountOutline";
 import EmailOutline from "mdi-material-ui/EmailOutline";
-import { parse, format } from 'date-fns';
-import { da, is } from "date-fns/locale";
-import TableDense from "src/views/tables/TableDense";
-import { set } from "nprogress";
 import { Close } from "@mui/icons-material";
 import ErrorFetch from "../fetchError";
+import format from 'date-fns/format';
 
 const ImgStyled = styled('img')(({ theme }) => ({
     width: 250,
@@ -35,8 +32,8 @@ interface UserDetail {
     birthday: Date,
     login_type: string,
     is_ban: boolean,
-    createdAt: string,
-    updatedAt: string,
+    createdAt: Date,
+    updatedAt: Date,
     classes: Classes[]
 }
 
@@ -246,7 +243,7 @@ const UserDetail = () => {
                                 label='Birthday'
                                 minRows={2}
                                 placeholder='MM/DD/YYYY'
-                                value={profile?.birthday || ''}
+                                value={profile?.birthday ? format(new Date(profile.birthday), 'MM/dd/yyyy') : ''}
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position='start' />
