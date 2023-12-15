@@ -1,16 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next/dist/shared/lib/utils";
-import { parseCookies } from 'nookies';
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== 'PATCH') {
-        res.status(405).json({ error: 'Method not allowed' })
-        return
-    }
+export const fetchUpdateProfile = async (fullname: string, birthday: Date, accessToken: string) => {
     try {
-        const cookiess = parseCookies({ req });
-        const accessToken = cookiess.accessToken;
-        const { fullname, birthday } = req.body;
-
         const apiResponse = await fetch('http://localhost:8080/user/edit_profile', {
             method: 'PATCH',
             headers: {
@@ -26,18 +15,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (apiResponse.ok) {
             const data = await apiResponse.json();
-            res.status(200).json({
-                message: 'Update profile successfully',
-                data: data
-            });
+            return { data, status: apiResponse.status };
         }
         else {
             const errorData = await apiResponse.json();
-            res.status(apiResponse.status).json({ error: errorData.message });
+            return { message: errorData, status: apiResponse.status };
         }
     }
     catch (error) {
-        console.error('Error during refresh:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return { error, status: 500 };
     }
 }

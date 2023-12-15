@@ -47,7 +47,6 @@ const UserDropdown = () => {
   const handleLogout = async () => {
     removeCookie('accessToken')
     removeCookie('refreshToken')
-    console.log(getCookie('accessToken'))
     router.push('/pages/login')
   }
 

@@ -1,9 +1,6 @@
 import Grid from '@mui/material/Grid'
 import ApexChartWrapper from 'src/@core/styles/libs/react-apexcharts'
-import Trophy from 'src/views/dashboard/Trophy'
-import StatisticsCard from 'src/views/dashboard/StatisticsCard'
-import TableColapsiblePaginate from 'src/views/tables/TableColapsiblePaginate'
-import ClassManagerTable from 'src/views/tables/TableStickyHeader'
+import ClassManagerTable from 'src/views/tables/TableClass'
 import CardImgTop from 'src/views/cards/CardImgTop'
 
 const ClassManager = () => {

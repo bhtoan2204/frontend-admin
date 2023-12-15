@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { fetchRefresh } from './pages/api/auth/refresh';
 
 export async function middleware(request: NextRequest) {
     const accessToken = request.cookies.get('accessToken');
@@ -16,20 +17,11 @@ export async function middleware(request: NextRequest) {
     }
 
     if (accessToken === undefined && refreshToken !== undefined) {
-        const response = await fetch('http://localhost:3000/api/auth/refresh', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                "Accept": "application/json",
-                "Authorization": `Bearer ${refreshToken}`,
-                "cookie": `refreshToken=${refreshToken}`
-            },
-        });
-        if (response.ok) {
-            const data = await response.json();
+        const response = await fetchRefresh(refreshToken);
+        if (response.status === 200) {
             const setCookieHeaders = [
-                `accessToken=${data.accessToken}; Max-Age=${1 * 24 * 60 * 60}; Path=/;`,
-                `refreshToken=${data.refreshToken}; Max-Age=${3 * 24 * 60 * 60}; Path=/;`,
+                `accessToken=${response.data.accessToken}; Max-Age=${1 * 24 * 60 * 60}; Path=/;`,
+                `refreshToken=${response.data.refreshToken}; Max-Age=${3 * 24 * 60 * 60}; Path=/;`,
             ];
             return NextResponse.next({
                 headers: {

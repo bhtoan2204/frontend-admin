@@ -42,10 +42,7 @@ const createData = (name: string, calories: number, fat: number, carbs: number, 
 }
 
 const Row = (props: { row: ReturnType<typeof createData> }) => {
-  // ** Props
   const { row } = props
-
-  // ** State
   const [open, setOpen] = useState<boolean>(false)
 
   return (

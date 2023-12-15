@@ -23,6 +23,8 @@ import KeyOutline from 'mdi-material-ui/KeyOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 import Close from 'mdi-material-ui/Close'
+import { fetchChangePassword } from 'src/pages/api/user/changePassword'
+import { getCookie } from 'src/utils/cookies'
 
 interface State {
   newPassword: string
@@ -82,25 +84,16 @@ const TabSecurity = () => {
   }
 
   const onChangePassword = async () => {
-    const response = await fetch('/api/user/changePassword', {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        old_password: values.currentPassword,
-        password: values.newPassword,
-        rewrite_password: values.confirmNewPassword
-      }),
-    });
-    if (response.ok) {
+    const response = await fetchChangePassword(values.currentPassword, values.newPassword, values.confirmNewPassword,
+      getCookie('accessToken') as string);
+
+    if (response.status === 200) {
       setSeverity('success')
       setContent('Change password successfully')
     } else {
-      const errorData = await response.json();
+      const errorData = response.errorData
       setSeverity('error')
-      setContent(errorData.error)
+      setContent("Something wrong, please try again")
     }
     setOpenAlert(true)
   }
