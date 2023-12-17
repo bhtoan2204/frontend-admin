@@ -1,7 +1,5 @@
-// ** React Imports
-import { useState, useRef, ChangeEvent, useEffect } from 'react';
+import { useState, ChangeEvent, useEffect } from 'react';
 
-// ** MUI Imports
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableRow from '@mui/material/TableRow';
@@ -10,9 +8,13 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import { useRouter } from 'next/router';
+import { fetchClasses } from 'src/pages/api/classManage/getClasses';
+import { getCookie } from 'src/utils/cookies';
 
 
 interface Data {
+  _id: string;
   id: string;
   className: string;
   description: string;
@@ -27,16 +29,17 @@ interface Data {
 const active_list = [null, true, false];
 
 const ClassManagerTable = () => {
+  const router = useRouter();
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [rows, setRows] = useState<Data[]>([]);
   const [is_active, setIs_active] = useState<boolean | null>(null);
   const [is_descending, setIs_descending] = useState<boolean>(false);
   const [totalItems, setTotalItems] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
-    console.log(rows);
   };
 
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
@@ -44,39 +47,19 @@ const ClassManagerTable = () => {
     setPage(0);
   };
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch('/api/classManage/getClasses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          page: page + 1,
-          itemPerPage: rowsPerPage,
-          is_active: is_active,
-          is_descending: is_descending,
-        }),
-      });
-      const data = await response.json();
-
-      return data.data;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
   useEffect(() => {
     const fetchDataAndSetRows = async () => {
-      const data = await fetchData();
-      if (data) {
-        setRows(data.classesWithHostName);
-        setTotalItems(data.totalCount);
+      const data = await fetchClasses(page + 1, rowsPerPage, is_active, is_descending, getCookie('accessToken') as string);
+      if (data.status === 201) {
+        const classData = data.data.classesWithHostName;
+        const totalCount = data.data.totalCount;
+        setRows(classData);
+        setTotalItems(totalCount);
+        setIsLoading(false);
       }
     };
     fetchDataAndSetRows();
-  }, [page, rowsPerPage, is_active, is_descending]);
+  }, [page, rowsPerPage, is_active, is_descending, isLoading]);
 
   const handleSort = (() => {
     setIs_descending(!is_descending);
@@ -88,8 +71,9 @@ const ClassManagerTable = () => {
     setPage(0);
   }
 
-  const handleClickRow = (id: string) => {
-    console.log(id);
+  const handleClickRow = (classId: string) => {
+    if (classId === '' || classId === undefined) return;
+    router.push(`/class-detail/${classId}`)
   }
 
   return (
@@ -120,21 +104,19 @@ const ClassManagerTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map(row => (
+            {rows.length > 0 && rows.map(row => (
               <TableRow
-                key={row.id}
-                sx={{
-                  '&:last-of-type td, &:last-of-type th': {
-                    border: 0
-                  }
-                }}
-                onClick={() => handleClickRow(row.id)}
+                key={row._id as string}
+                onClick={() => handleClickRow(row._id)}
                 sx={{
                   "& > *": { borderBottom: "unset" },
                   "&:hover": {
                     backgroundColor: "rgba(0, 0, 0, 0.08)",
                     cursor: "pointer"
                   },
+                  '&:last-of-type td, &:last-of-type th': {
+                    border: 0
+                  }
                 }}
               >
                 <TableCell component='th' scope='row' style={{ width: '200px' }}>
@@ -146,6 +128,7 @@ const ClassManagerTable = () => {
                 <TableCell align='right' style={{ width: '200px' }}>{row.createdAt}</TableCell>
               </TableRow>
             ))}
+
           </TableBody>
         </Table>
         <TablePagination

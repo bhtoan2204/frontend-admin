@@ -22,6 +22,8 @@ import DatePicker from 'react-datepicker'
 
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import { getCookie } from 'src/utils/cookies'
+import { fetchProfile } from 'src/pages/api/user/getProfile'
+import { fetchUpdateProfile } from 'src/pages/api/user/updateProfile'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
@@ -106,40 +108,24 @@ const TabAccount = () => {
       }
     }
 
-    const updateProfileResponse = await fetch('/api/user/updateProfile', {
-      method: 'PATCH',
-      headers: {
-        "Content-Type": 'application/json',
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({ fullname: profile.fullname, birthday: profile.birthday }),
-    });
+    const updateData = await fetchUpdateProfile(profile.fullname, profile.birthday, getCookie('accessToken') as string);
 
-    if (updateProfileResponse.ok) {
-      const data = await updateProfileResponse.json();
+    if (updateData.status === 201) {
       setSeverity('success');
-      setContent(data.message);
+      setContent(updateData.data.message);
       setOpenAlert(true);
     }
     else {
-      const data = await updateProfileResponse.json();
       setSeverity('error');
-      setContent(data.error);
+      setContent(updateData.message);
       setOpenAlert(true);
     }
   }
 
   const getProfile = async () => {
-    const response = await fetch('/api/user/getProfile', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    });
-    if (response.ok) {
-      const data = await response.json();
-      return data;
+    const response = await fetchProfile(getCookie('accessToken') as string);
+    if (response.status === 200) {
+      return response.data;
     }
     else {
       return null;
@@ -150,12 +136,11 @@ const TabAccount = () => {
     const fetchProfile = async () => {
       try {
         const data = await getProfile();
-
         if (data) {
-          data.data.birthday = new Date(data.data.birthday);
-          setProfile(data.data);
-          if (data.data.avatar !== null) {
-            setImgSrc(data.data.avatar);
+          data.birthday = new Date(data.birthday);
+          setProfile(data);
+          if (data.avatar !== null) {
+            setImgSrc(data.avatar);
           }
           else {
             setImgSrc('/images/avatars/1.png');

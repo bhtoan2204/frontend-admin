@@ -16,6 +16,9 @@ import TablePagination from "@mui/material/TablePagination";
 import { useRouter } from "next/router";
 import { TextField } from "@mui/material";
 import { Search } from "@mui/icons-material";
+import { fetchGetUserPerPage } from "src/pages/api/userManage/getUserPerPage";
+import { getCookie } from "src/utils/cookies";
+import { fetchSearchUserPerPage } from "src/pages/api/userManage/searchUser";
 
 interface RowType {
     id: string,
@@ -159,70 +162,22 @@ export default function TableColapsiblePaginate() {
         setPage(0);
     };
 
-    const getUserPerpage = async () => {
-        const apiResponse = await fetch('/api/userManage/getUserPerPage', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                page: page + 1,
-                rowsPerPage: rowsPerPage
-            })
-        });
-
-        if (apiResponse.ok) {
-            const data = await apiResponse.json();
-            return data;
-        }
-        else {
-            const errorData = await apiResponse.json();
-            return errorData;
-        }
-    };
-
     const handleSearch = async () => {
         if (searchValue === '') {
-            const data = await getUserPerpage();
-            if (data.data) {
-                const arrData = data.data;
-                setRows(arrData);
-            }
+            const data = await fetchGetUserPerPage(page + 1, rowsPerPage, getCookie('accessToken') as string);
+            setRows(data);
         }
         else {
-            const apiResponse = await fetch('/api/userManage/searchUser', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    text: searchValue,
-                    page: page + 1,
-                    perPage: rowsPerPage
-                })
-            });
-
-            if (apiResponse.ok) {
-                const data = await apiResponse.json();
-                if (data.data) {
-                    const arrData = data.data;
-                    setRows(arrData);
-                }
-            }
-            else {
-                const errorData = await apiResponse.json();
-                return errorData;
-            }
+            const data = await fetchSearchUserPerPage(searchValue, page + 1, rowsPerPage, getCookie('accessToken') as string);
+            setRows(data);
         }
-    };
+    }
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const data = await getUserPerpage();
-            if (data.data) {
-                const arrData = data.data;
+            const data = await fetchGetUserPerPage(page + 1, rowsPerPage, getCookie('accessToken') as string);
+            if (data) {
+                const arrData = data;
                 setRows(arrData);
             }
         }

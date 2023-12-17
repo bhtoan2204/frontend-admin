@@ -1,16 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next/dist/shared/lib/utils";
-import { parseCookies } from 'nookies';
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== 'POST') {
-        res.status(405).json({ error: 'Method not allowed' });
-        return;
-    }
+export const fetchGetUserPerPage = async (page: number, rowsPerPage: number, accessToken: string) => {
     try {
-        const cookiess = parseCookies({ req });
-        const accessToken = cookiess.accessToken;
-        const { page, rowsPerPage } = req.body;
-
         const apiResponse = await fetch('http://localhost:8080/admin/accounts/getUsers', {
             method: 'POST',
             headers: {
@@ -26,18 +15,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (apiResponse.ok) {
             const data = await apiResponse.json();
-            res.status(200).json({
-                message: 'Get user successfully',
-                data: data
-            });
+            return data;
         }
         else {
             const errorData = await apiResponse.json();
-            res.status(apiResponse.status).json({ error: errorData.message });
+            return errorData;
         }
     }
     catch (error) {
         console.error('Error during refresh:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return
     }
 }

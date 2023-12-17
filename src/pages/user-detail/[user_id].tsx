@@ -9,6 +9,9 @@ import EmailOutline from "mdi-material-ui/EmailOutline";
 import { Close } from "@mui/icons-material";
 import ErrorFetch from "../fetchError";
 import format from 'date-fns/format';
+import { fetchBanAccount } from "../api/userManage/banAccount";
+import { getCookie } from "src/utils/cookies";
+import { fetchUserDetail } from "../api/userManage/getUserDetail";
 
 const ImgStyled = styled('img')(({ theme }) => ({
     width: 250,
@@ -47,51 +50,19 @@ const UserDetail = () => {
     const [severity, setSeverity] = useState<'success' | 'info' | 'warning' | 'error'>('success')
     const [loading, setLoading] = useState(true);
 
-    const fetchUserDetail = async () => {
-        const apiResponse = await fetch(`/api/userManage/getUserDetail`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                user_id: user_id
-            })
-        });
-
-        if (apiResponse.ok) {
-            const data = await apiResponse.json();
-            return data;
-        }
-        else {
-            const errorData = await apiResponse.json();
-            return errorData;
-        }
-    };
-
     const banAccount = async () => {
         const { user_id } = router.query;
-        const apiResponse = await fetch(`/api/userManage/banAccount`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-                user_id: user_id
-            })
-        });
-        if (apiResponse.ok) {
-            const data = await apiResponse.json();
+        const data = await fetchBanAccount(user_id as string, getCookie('accessToken') as string);
+
+        if (data.status === 200) {
             setSeverity('success');
             setContent(data.data.message);
             setOpenAlert(true);
             setClickBan(!clickBan)
         }
         else {
-            const errorData = await apiResponse.json();
             setSeverity('error');
-            setContent(errorData.error);
+            setContent(data.errorData.message);
             setOpenAlert(true);
             setClickBan(!clickBan)
         }
@@ -101,8 +72,8 @@ const UserDetail = () => {
         const { user_id } = router.query;
         const fetchUserData = async () => {
             try {
-                const data = await fetchUserDetail();
-                if (data.data) {
+                const data = await fetchUserDetail(user_id as string, getCookie('accessToken') as string);
+                if (data.status === 200) {
                     setProfile(data.data);
                 }
                 else {
@@ -276,7 +247,7 @@ const UserDetail = () => {
                             {openAlert ? (
                                 <Alert
                                     severity={severity}
-                                    sx={{ '& a': { fontWeight: 400 } }}
+                                    sx={{ '& a': { fontWeight: 400 }, maxHeight: 45 }}
                                     action={
                                         <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpenAlert(false)}>
                                             <Close fontSize='inherit' />

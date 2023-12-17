@@ -19,6 +19,8 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 
 // ** Types
 import { ThemeColor } from 'src/@core/layouts/types'
+import { fetchStatistics } from 'src/pages/api/statistics'
+import { getCookie } from 'src/utils/cookies'
 
 interface DataType {
   stats: string
@@ -59,35 +61,30 @@ const StatisticsCard = () => {
 
   const getStatistics = () => {
     const fetchData = (async () => {
-      const response = await fetch('/api/statistics', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      })
-      const data = await response.json()
-      const newData: DataType[] = [
-        {
-          stats: data.data.totalTeacher,
-          title: 'Total Teachers',
-          color: 'primary',
-          icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
-        },
-        {
-          stats: data.data.totalStudent,
-          title: 'Total Students',
-          color: 'success',
-          icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
-        },
-        {
-          stats: data.data.totalClass,
-          color: 'warning',
-          title: 'Total Classes',
-          icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
-        }
-      ]
-      setSalesData(newData)
+      const data = await fetchStatistics(getCookie('accessToken') as string);
+      if (data.status == 200) {
+        const newData: DataType[] = [
+          {
+            stats: data.data.totalTeacher,
+            title: 'Total Teachers',
+            color: 'primary',
+            icon: <TrendingUp sx={{ fontSize: '1.75rem' }} />
+          },
+          {
+            stats: data.data.totalStudent,
+            title: 'Total Students',
+            color: 'success',
+            icon: <AccountOutline sx={{ fontSize: '1.75rem' }} />
+          },
+          {
+            stats: data.data.totalClass,
+            color: 'warning',
+            title: 'Total Classes',
+            icon: <CellphoneLink sx={{ fontSize: '1.75rem' }} />
+          }
+        ]
+        setSalesData(newData)
+      }
     })
     fetchData()
   }

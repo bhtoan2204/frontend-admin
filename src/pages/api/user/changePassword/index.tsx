@@ -1,15 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next/dist/shared/lib/utils";
-import { parseCookies } from 'nookies';
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<any> {
-    if (req.method !== 'PATCH') {
-        res.status(405).json({ error: 'Method not allowed' })
-        return
-    }
+export const fetchChangePassword = async (
+    old_password: string, password: string,
+    rewrite_password: string, accessToken: string) => {
     try {
-        const { old_password, password, rewrite_password } = req.body;
-        const cookiess = parseCookies({ req });
-        const accessToken = cookiess.accessToken;
 
         const apiResponse = await fetch('http://localhost:8080/user/change_password', {
             method: 'PATCH',
@@ -27,19 +19,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (apiResponse.ok) {
             const data = await apiResponse.json();
-
-            res.status(200).json({
-                message: 'Change password successful',
-                data
-            });
+            return { data, status: apiResponse.status };
         }
         else {
             const errorData = await apiResponse.json();
-            console.log(errorData)
-            res.status(apiResponse.status).json({ error: errorData.message });
+            return { errorData, status: apiResponse.status };
         }
     } catch (error) {
-        console.error('Error during change password:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return { error, status: 500 };
     }
 }

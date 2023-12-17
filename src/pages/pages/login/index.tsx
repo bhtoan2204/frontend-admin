@@ -38,6 +38,8 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
+import { fetchLogin } from 'src/pages/api/auth/login'
+import { setCookie } from 'src/utils/cookies'
 
 
 interface State {
@@ -87,19 +89,18 @@ const LoginPage = () => {
   }
 
   const handleLogin = async () => {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({ email: values.email, password: values.password }),
-    });
-    if (response.ok) {
-      router.push('/');
-    } else {
-      const errorData = await response.json();
-      setError(errorData.error);
+    try {
+      const data = await fetchLogin(values.email, values.password);
+      if ((data as { status: number }).status === 200) {
+        setCookie('accessToken', (data as { data: { accessToken: string } }).data.accessToken, 1);
+        setCookie('refreshToken', (data as { data: { refreshToken: string } }).data.refreshToken, 3);
+        router.push('/')
+      }
+      else {
+        setError((data as { errorData: { message: string } }).errorData.message)
+      }
+    } catch (error) {
+      setError(error as string | null);
     }
   }
 

@@ -55,7 +55,7 @@ const ErrorFetch = () => {
           <Typography variant='h5' sx={{ mb: 1, fontSize: '1.5rem !important' }}>
             Internal server error.
           </Typography>
-          <Typography variant='body2'>User not exist 👨🏻‍💻</Typography>
+          <Typography variant='body2'>Something wrong 👨🏻‍💻</Typography>
         </BoxWrapper>
         <Img height='487' alt='error-illustration' src='/images/pages/500.png' />
         <Link passHref href='/'>
