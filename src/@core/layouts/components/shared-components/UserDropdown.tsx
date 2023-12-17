@@ -13,15 +13,9 @@ import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-
-// ** Icons Imports
-import CogOutline from 'mdi-material-ui/CogOutline'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
-import EmailOutline from 'mdi-material-ui/EmailOutline'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
-import MessageOutline from 'mdi-material-ui/MessageOutline'
-import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
+import { getCookie, removeCookie } from 'src/utils/cookies'
 
 // ** Styled Components
 const BadgeContentSpan = styled('span')(({ theme }) => ({
@@ -48,6 +42,12 @@ const UserDropdown = () => {
       router.push(url)
     }
     setAnchorEl(null)
+  }
+
+  const handleLogout = async () => {
+    removeCookie('accessToken')
+    removeCookie('refreshToken')
+    router.push('/pages/login')
   }
 
   const styles = {
@@ -113,14 +113,7 @@ const UserDropdown = () => {
           </Box>
         </MenuItem>
         <Divider />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose()}>
-          <Box sx={styles}>
-            <CogOutline sx={{ marginRight: 2 }} />
-            Settings
-          </Box>
-        </MenuItem>
-        <Divider />
-        <MenuItem sx={{ py: 2 }} onClick={() => handleDropdownClose('/pages/login')}>
+        <MenuItem sx={{ py: 2 }} onClick={handleLogout}>
           <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
           Logout
         </MenuItem>

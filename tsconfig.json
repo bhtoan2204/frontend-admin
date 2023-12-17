@@ -31,7 +31,7 @@
   },
   "include": [
     "src"
-  ],
+, "src/middleware.ts"  ],
   "exclude": [
     "node_modules"
   ]

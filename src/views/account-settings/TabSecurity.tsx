@@ -14,12 +14,17 @@ import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import InputAdornment from '@mui/material/InputAdornment'
+import Alert from '@mui/material/Alert'
+import AlertTitle from '@mui/material/AlertTitle'
 
 // ** Icons Imports
 import EyeOutline from 'mdi-material-ui/EyeOutline'
 import KeyOutline from 'mdi-material-ui/KeyOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
+import Close from 'mdi-material-ui/Close'
+import { fetchChangePassword } from 'src/pages/api/user/changePassword'
+import { getCookie } from 'src/utils/cookies'
 
 interface State {
   newPassword: string
@@ -40,6 +45,10 @@ const TabSecurity = () => {
     showCurrentPassword: false,
     showConfirmNewPassword: false
   })
+
+  const [openAlert, setOpenAlert] = useState<boolean>(false)
+  const [content, setContent] = useState<string>('')
+  const [severity, setSeverity] = useState<'success' | 'info' | 'warning' | 'error'>('success')
 
   // Handle Current Password
   const handleCurrentPasswordChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -72,6 +81,21 @@ const TabSecurity = () => {
   }
   const handleMouseDownConfirmNewPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
+  }
+
+  const onChangePassword = async () => {
+    const response = await fetchChangePassword(values.currentPassword, values.newPassword, values.confirmNewPassword,
+      getCookie('accessToken') as string);
+
+    if (response.status === 200) {
+      setSeverity('success')
+      setContent('Change password successfully')
+    } else {
+      const errorData = response.errorData
+      setSeverity('error')
+      setContent("Something wrong, please try again")
+    }
+    setOpenAlert(true)
   }
 
   return (
@@ -166,15 +190,25 @@ const TabSecurity = () => {
             <img width={183} alt='avatar' height={256} src='/images/pages/pose-m-1.png' />
           </Grid>
         </Grid>
+        <Divider sx={{ margin: 0 }} />
+        {openAlert ? (
+          <Grid item xs={12} sx={{ mb: 3 }}>
+            <Alert
+              severity={severity}
+              sx={{ '& a': { fontWeight: 400 } }}
+              action={
+                <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpenAlert(false)}>
+                  <Close fontSize='inherit' />
+                </IconButton>
+              }
+            >
+              <AlertTitle>{content}</AlertTitle>
+            </Alert>
+          </Grid>
+        ) : null}
       </CardContent>
 
-      <Divider sx={{ margin: 0 }} />
-
       <CardContent>
-        <Box sx={{ mt: 1.75, display: 'flex', alignItems: 'center' }}>
-          <KeyOutline sx={{ marginRight: 3 }} />
-          <Typography variant='h6'>Two-factor authentication</Typography>
-        </Box>
 
         <Box sx={{ mt: 5.75, display: 'flex', justifyContent: 'center' }}>
           <Box
@@ -186,35 +220,21 @@ const TabSecurity = () => {
               flexDirection: 'column'
             }}
           >
-            <Avatar
-              variant='rounded'
-              sx={{ width: 48, height: 48, color: 'common.white', backgroundColor: 'primary.main' }}
-            >
-              <LockOpenOutline sx={{ fontSize: '1.75rem' }} />
-            </Avatar>
-            <Typography sx={{ fontWeight: 600, marginTop: 3.5, marginBottom: 3.5 }}>
-              Two factor authentication is not enabled yet.
-            </Typography>
-            <Typography variant='body2'>
-              Two-factor authentication adds an additional layer of security to your account by requiring more than just
-              a password to log in. Learn more.
-            </Typography>
           </Box>
         </Box>
-
         <Box sx={{ mt: 11 }}>
-          <Button variant='contained' sx={{ marginRight: 3.5 }}>
+          <Button variant='contained' sx={{ marginRight: 3.5 }} onClick={onChangePassword}>
             Save Changes
           </Button>
           <Button
             type='reset'
             variant='outlined'
             color='secondary'
-            onClick={() => setValues({ ...values, currentPassword: '', newPassword: '', confirmNewPassword: '' })}
-          >
+            onClick={() => setValues({ ...values, currentPassword: '', newPassword: '', confirmNewPassword: '' })}>
             Reset
           </Button>
         </Box>
+
       </CardContent>
     </form>
   )

@@ -1,10 +1,9 @@
 // ** React Imports
-import { useState, ElementType, ChangeEvent, SyntheticEvent } from 'react'
+import { useState, ElementType, ChangeEvent, SyntheticEvent, forwardRef, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
 import Select from '@mui/material/Select'
 import { styled } from '@mui/material/styles'
@@ -18,8 +17,13 @@ import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
 import Button, { ButtonProps } from '@mui/material/Button'
 
-// ** Icons Imports
 import Close from 'mdi-material-ui/Close'
+import DatePicker from 'react-datepicker'
+
+import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
+import { getCookie } from 'src/utils/cookies'
+import { fetchProfile } from 'src/pages/api/user/getProfile'
+import { fetchUpdateProfile } from 'src/pages/api/user/updateProfile'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
@@ -45,20 +49,120 @@ const ResetButtonStyled = styled(Button)<ButtonProps>(({ theme }) => ({
   }
 }))
 
+const CustomInput = forwardRef((props, ref) => {
+  return <TextField inputRef={ref} label='Birth Date' fullWidth {...props} />
+})
+
 const TabAccount = () => {
   // ** State
-  const [openAlert, setOpenAlert] = useState<boolean>(true)
-  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
+  const [openAlert, setOpenAlert] = useState<boolean>(false)
+  const [content, setContent] = useState<string>('')
+  const [severity, setSeverity] = useState<'success' | 'info' | 'warning' | 'error'>('success')
 
-  const onChange = (file: ChangeEvent) => {
+  const [imgSrc, setImgSrc] = useState<string>('')
+
+  const [profile, setProfile] = useState({
+    _id: '',
+    email: '',
+    fullname: '',
+    role: '',
+    avatar: null,
+    birthday: new Date(),
+    createdAt: '',
+    updateAt: '',
+    id: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [image, setImage] = useState<File | null>(null);
+
+  const onChange = (event: ChangeEvent) => {
     const reader = new FileReader()
-    const { files } = file.target as HTMLInputElement
+    const { files } = event.target as HTMLInputElement
     if (files && files.length !== 0) {
-      reader.onload = () => setImgSrc(reader.result as string)
-
+      reader.onload = () => {
+        setImgSrc(reader.result as string)
+      }
+      setImage(files[0]);
       reader.readAsDataURL(files[0])
     }
   }
+
+  const updateProfile = async () => {
+    const formData = new FormData();
+    if (image !== null) {
+      formData.append('avatar', image);
+      const accessToken = getCookie('accessToken');
+      const response = await fetch('http://localhost:8080/user/upload_avatar', {
+        method: 'PATCH',
+        headers: {
+          'Authorization': 'Bearer ' + accessToken,
+        },
+        body: formData
+      })
+      if (response.status !== 201) {
+        const data = await response.json();
+        setSeverity('error');
+        setContent(data.error);
+        setOpenAlert(true);
+        return;
+      }
+    }
+
+    const updateData = await fetchUpdateProfile(profile.fullname, profile.birthday, getCookie('accessToken') as string);
+
+    if (updateData.status === 201) {
+      setSeverity('success');
+      setContent(updateData.data.message);
+      setOpenAlert(true);
+    }
+    else {
+      setSeverity('error');
+      setContent(updateData.message);
+      setOpenAlert(true);
+    }
+  }
+
+  const getProfile = async () => {
+    const response = await fetchProfile(getCookie('accessToken') as string);
+    if (response.status === 200) {
+      return response.data;
+    }
+    else {
+      return null;
+    }
+  }
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const data = await getProfile();
+        if (data) {
+          data.birthday = new Date(data.birthday);
+          setProfile(data);
+          if (data.avatar !== null) {
+            setImgSrc(data.avatar);
+          }
+          else {
+            setImgSrc('/images/avatars/1.png');
+          }
+          setLoading(false);
+        } else {
+          setSeverity('error');
+          setContent('Failed to fetch profile data');
+          setOpenAlert(true);
+        }
+      } catch (error) {
+        setSeverity('error');
+        setContent('Failed to fetch profile data');
+        setOpenAlert(true);
+        setLoading(false);
+      }
+    };
+
+    if (loading) {
+      fetchProfile();
+    }
+  }, [loading]);
 
   return (
     <CardContent>
@@ -89,18 +193,32 @@ const TabAccount = () => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Username' placeholder='johnDoe' defaultValue='johnDoe' />
+            <TextField
+              fullWidth
+              label="Fullname"
+              value={profile.fullname}
+              onChange={(text) => setProfile({ ...profile, fullname: text.target.value as any })}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Name' placeholder='John Doe' defaultValue='John Doe' />
+            <DatePickerWrapper>
+              <DatePicker
+                selected={profile.birthday}
+                showYearDropdown
+                showMonthDropdown
+                id="account-settings-date"
+                customInput={<CustomInput />}
+                onChange={(date) => setProfile({ ...profile, birthday: date as any })}
+              />
+            </DatePickerWrapper>
           </Grid>
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              type='email'
-              label='Email'
-              placeholder='johnDoe@example.com'
-              defaultValue='johnDoe@example.com'
+              type="email"
+              label="Email"
+              value={profile.email}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -108,31 +226,13 @@ const TabAccount = () => {
               <InputLabel>Role</InputLabel>
               <Select label='Role' defaultValue='admin'>
                 <MenuItem value='admin'>Admin</MenuItem>
-                <MenuItem value='author'>Author</MenuItem>
-                <MenuItem value='editor'>Editor</MenuItem>
-                <MenuItem value='maintainer'>Maintainer</MenuItem>
-                <MenuItem value='subscriber'>Subscriber</MenuItem>
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select label='Status' defaultValue='active'>
-                <MenuItem value='active'>Active</MenuItem>
-                <MenuItem value='inactive'>Inactive</MenuItem>
-                <MenuItem value='pending'>Pending</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField fullWidth label='Company' placeholder='ABC Pvt. Ltd.' defaultValue='ABC Pvt. Ltd.' />
-          </Grid>
-
           {openAlert ? (
             <Grid item xs={12} sx={{ mb: 3 }}>
               <Alert
-                severity='warning'
+                severity={severity}
                 sx={{ '& a': { fontWeight: 400 } }}
                 action={
                   <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpenAlert(false)}>
@@ -140,16 +240,12 @@ const TabAccount = () => {
                   </IconButton>
                 }
               >
-                <AlertTitle>Your email is not confirmed. Please check your inbox.</AlertTitle>
-                <Link href='/' onClick={(e: SyntheticEvent) => e.preventDefault()}>
-                  Resend Confirmation
-                </Link>
+                <AlertTitle>{content}</AlertTitle>
               </Alert>
             </Grid>
           ) : null}
-
           <Grid item xs={12}>
-            <Button variant='contained' sx={{ marginRight: 3.5 }}>
+            <Button variant='contained' sx={{ marginRight: 3.5 }} onClick={updateProfile}>
               Save Changes
             </Button>
             <Button type='reset' variant='outlined' color='secondary'>
