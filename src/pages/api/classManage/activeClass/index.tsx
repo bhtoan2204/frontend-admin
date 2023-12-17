@@ -10,7 +10,6 @@ export const fetchActiveClass = async (class_id: string, accessToken: string) =>
         });
         if (apiResponse.ok) {
             const data = await apiResponse.json();
-            console.log(data);
             return { data, status: apiResponse.status };
         }
         else {

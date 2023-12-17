@@ -247,7 +247,7 @@ const UserDetail = () => {
                             {openAlert ? (
                                 <Alert
                                     severity={severity}
-                                    sx={{ '& a': { fontWeight: 400 } }}
+                                    sx={{ '& a': { fontWeight: 400 }, maxHeight: 45 }}
                                     action={
                                         <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpenAlert(false)}>
                                             <Close fontSize='inherit' />

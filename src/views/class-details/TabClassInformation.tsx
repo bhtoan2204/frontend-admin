@@ -12,6 +12,7 @@ import { TimerOutline } from "mdi-material-ui";
 import { fetchActiveClass } from "src/pages/api/classManage/activeClass";
 import { fetchClassDetail } from "src/pages/api/classManage/getClassDetails";
 import ErrorFetch from "src/pages/fetchError";
+import { fetchTeacherOfClass } from "src/pages/api/classManage/getTeacher";
 
 const ImgStyled = styled('img')(({ theme }) => ({
     width: 250,
@@ -19,20 +20,6 @@ const ImgStyled = styled('img')(({ theme }) => ({
     marginRight: theme.spacing(6.25),
     borderRadius: theme.shape.borderRadius
 }))
-
-const isValidClassId = (classId: any) => {
-    if (typeof classId !== 'string') {
-        return false;
-    }
-    if (classId.length !== 24) {
-        return false;
-    }
-    const isHex = /^[0-9a-fA-F]+$/.test(classId);
-    if (!isHex) {
-        return false;
-    }
-    return true;
-};
 
 interface ClassDetailData {
     id: string;
@@ -48,10 +35,26 @@ interface ClassDetailData {
 }
 
 interface TeacherData {
-
+    id: string;
+    avatar: string;
+    fullname: string;
+    email: string;
+    login_type: string;
+    is_ban: boolean;
 }
 
-const TeacherTable = () => {
+const TeacherTable: React.FC<ClassDetailProps> = ({ class_id }) => {
+    const [teacherData, setTeacherData] = useState<TeacherData[]>([]);
+    const router = useRouter();
+    useEffect(() => {
+        const fetchTeachers = async () => {
+            const data = await fetchTeacherOfClass(class_id as string, getCookie('accessToken') as string);
+            if (data.status === 201) {
+                setTeacherData(data.data);
+            }
+        }
+        fetchTeachers();
+    }, [class_id])
     return (
         <Card sx={{ marginTop: 5 }}>
             <CardHeader title='Teachers' titleTypographyProps={{ variant: 'h6' }} />
@@ -59,12 +62,47 @@ const TeacherTable = () => {
                 <Table sx={{ minWidth: 650 }} size='small' aria-label='a dense table'>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Class name</TableCell>
-                            <TableCell align='left'>Class Description</TableCell>
-                            <TableCell align='left'>Class Id</TableCell>
-                            <TableCell align='left'>Is Active</TableCell>
+                            <TableCell style={{ width: '12%' }} align='center'>Avatar</TableCell>
+                            <TableCell style={{ width: '22%' }} align='left'>Fullname</TableCell>
+                            <TableCell style={{ width: '22%' }} align='left'>Email</TableCell>
+                            <TableCell style={{ width: '22%' }} align='center'>Login type</TableCell>
+                            <TableCell style={{ width: '22%' }} align='center'>Is ban</TableCell>
                         </TableRow>
                     </TableHead>
+                    <TableBody>
+                        {teacherData.map((row) => (
+                            <TableRow
+                                key={row.id}
+                                onClick={() => {
+                                    if (row.id === '' || row.id === undefined) return;
+                                    router.push(`/user-detail/${row.id}`)
+                                }}
+                                sx={{
+                                    '&:last-child td, &:last-child th': { border: 0 },
+                                    "& > *": { borderBottom: "unset" },
+                                    "&:hover": {
+                                        backgroundColor: "rgba(0, 0, 0, 0.08)",
+                                        cursor: "pointer"
+                                    },
+                                    '&:last-of-type td, &:last-of-type th': {
+                                        border: 0
+                                    }
+                                }}
+                            >
+                                <TableCell style={{ width: '12%' }} component='th' scope='row' align='center'>
+                                    <ImgStyled
+                                        src={row.avatar === null ? '/images/avatars/1.png' : row.avatar}
+                                        alt='Profile Pic'
+                                        sx={{ width: '100%', height: '100%', objectFit: 'cover', padding: 1, borderRadius: '10%' }}
+                                    />
+                                </TableCell>
+                                <TableCell style={{ width: '22%' }} align='left'>{row.fullname}</TableCell>
+                                <TableCell style={{ width: '22%' }} align='left'>{row.email}</TableCell>
+                                <TableCell style={{ width: '22%' }} align='center'>{row.login_type}</TableCell>
+                                <TableCell style={{ width: '22%' }} align='center'>{row.is_ban ? 'True' : 'False'}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </TableContainer>
         </Card>
@@ -80,7 +118,6 @@ const ClassDetail: React.FC<ClassDetailProps> = ({ class_id }) => {
     const [openAlert, setOpenAlert] = useState<boolean>(false)
     const [content, setContent] = useState<string>('')
     const [severity, setSeverity] = useState<'success' | 'info' | 'warning' | 'error'>('success')
-    const [loading, setLoading] = useState(true);
     const [classDetail, setClassDetail] = useState<ClassDetailData | null>(null);
 
     const activeClass = async () => {
@@ -99,8 +136,7 @@ const ClassDetail: React.FC<ClassDetailProps> = ({ class_id }) => {
     }
 
     useEffect(() => {
-        console.log(class_id)
-        if (class_id != undefined && isValidClassId(class_id)) {
+        if (class_id != undefined) {
             const fetchUserData = async () => {
                 try {
                     const data = await fetchClassDetail(class_id as string, getCookie('accessToken') as string);
@@ -113,146 +149,128 @@ const ClassDetail: React.FC<ClassDetailProps> = ({ class_id }) => {
                 }
                 catch (error) {
                     setClassDetail(null);
-                    setLoading(false);
-                }
-                finally {
-                    setLoading(false);
                 }
             };
             if (class_id) {
                 fetchUserData()
             }
         }
-        else {
-            setLoading(false);
-        }
     }, [class_id, clickActive]);
 
-    if (loading) {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-                <CircularProgress />
-            </div>
-        );
-    }
-    if (classDetail === null) return (<ErrorFetch />)
-
-    else {
-        return (
-            <Card sx={{ padding: 8 }}>
-                <Grid container spacing={5}>
-                    <Grid item xs={12} sm={3} sx={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', order: { xs: 2, sm: 1 } }}>
-                        <ImgStyled
-                            src={classDetail?.host.avatar === null ? '/images/avatars/1.png' : classDetail?.host.avatar}
-                            alt='Profile Pic'
-                            sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10%', }}
+    return (
+        <Card sx={{ padding: 8 }}>
+            <Grid container spacing={5}>
+                <Grid item xs={12} sm={3} sx={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', order: { xs: 2, sm: 1 } }}>
+                    <ImgStyled
+                        src={classDetail?.host.avatar === null ? '/images/avatars/1.png' : classDetail?.host.avatar}
+                        alt='Profile Pic'
+                        sx={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10%', }}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={9} container spacing={2}>
+                    <Grid item sm={12}><Divider /></Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label='Class Name'
+                            value={classDetail?.className || ''}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position='start'>
+                                        <PeopleAltOutlined />
+                                    </InputAdornment>
+                                ),
+                                readOnly: true
+                            }}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={9} container spacing={2}>
-                        <Grid item sm={12}><Divider /></Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label='Class Name'
-                                value={classDetail?.className || ''}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position='start'>
-                                            <PeopleAltOutlined />
-                                        </InputAdornment>
-                                    ),
-                                    readOnly: true
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12}>
-                            <TextField
-                                fullWidth
-                                label='Class Description'
-                                minRows={2}
-                                multiline
-                                value={classDetail?.description || ''}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position='start' />
-                                    ),
-                                    readOnly: true
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label='Host Name'
-                                minRows={2}
-                                value={classDetail?.host.fullname || ''}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position='start'>
-                                            <AccountOutline />
-                                        </InputAdornment>
-                                    ),
-                                    readOnly: true
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label='Created At'
-                                minRows={2}
-                                value={classDetail?.createdAt ? format(new Date(classDetail.createdAt), 'MM/dd/yyyy') : ''}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position='start'>
-                                            <TimerOutline />
-                                        </InputAdornment>
-                                    ),
-                                    readOnly: true
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={2}>
-                            <TextField
-                                fullWidth
-                                label='Is Active'
-                                minRows={2}
-                                value={classDetail?.is_active}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position='start' />
-                                    ),
-                                    readOnly: true
-                                }}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={3} >
-                            <Button sx={{ marginTop: 2 }} variant='contained' onClick={activeClass}>
-                                {classDetail?.is_active ? 'Active this class' : 'Inactive this class'}
-                            </Button>
-                        </Grid>
-                        <Grid item xs={12} sm={9} >
-                            {openAlert ? (
-                                <Alert
-                                    severity={severity}
-                                    sx={{ '& a': { fontWeight: 400 } }}
-                                    action={
-                                        <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpenAlert(false)}>
-                                            <Close fontSize='inherit' />
-                                        </IconButton>
-                                    }
-                                >
-                                    <AlertTitle>{content}</AlertTitle>
-                                </Alert>
-                            ) : null}
-                        </Grid>
+                    <Grid item xs={12} sm={12}>
+                        <TextField
+                            fullWidth
+                            label='Class Description'
+                            minRows={2}
+                            multiline
+                            value={classDetail?.description || ''}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position='start' />
+                                ),
+                                readOnly: true
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField
+                            fullWidth
+                            label='Host Name'
+                            minRows={2}
+                            value={classDetail?.host.fullname || ''}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position='start'>
+                                        <AccountOutline />
+                                    </InputAdornment>
+                                ),
+                                readOnly: true
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            fullWidth
+                            label='Created At'
+                            minRows={2}
+                            value={classDetail?.createdAt ? format(new Date(classDetail.createdAt), 'MM/dd/yyyy') : ''}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position='start'>
+                                        <TimerOutline />
+                                    </InputAdornment>
+                                ),
+                                readOnly: true
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                        <TextField
+                            fullWidth
+                            label='Is Active'
+                            minRows={2}
+                            value={classDetail?.is_active}
+                            InputProps={{
+                                startAdornment: (
+                                    <InputAdornment position='start' />
+                                ),
+                                readOnly: true
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={3} >
+                        <Button sx={{ marginTop: 2 }} variant='contained' onClick={activeClass}>
+                            {classDetail?.is_active ? 'Inactive this class' : 'Active this class'}
+                        </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={9} >
+                        {openAlert ? (
+                            <Alert
+                                severity={severity}
+                                sx={{ '& a': { fontWeight: 400 }, maxHeight: 45 }}
+                                action={
+                                    <IconButton size='small' color='inherit' aria-label='close' onClick={() => setOpenAlert(false)}>
+                                        <Close fontSize='inherit' />
+                                    </IconButton>
+                                }
+                            >
+                                <AlertTitle>{content}</AlertTitle>
+                            </Alert>
+                        ) : null}
                     </Grid>
                 </Grid>
-                <Divider />
-                <TeacherTable />
-            </Card>
-        );
-    }
+            </Grid>
+            <Divider />
+            <TeacherTable class_id={class_id} />
+        </Card>
+    );
 }
 
 export default ClassDetail;

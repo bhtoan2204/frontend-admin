@@ -12,6 +12,9 @@ import { ClassOutlined } from '@mui/icons-material'
 const navigation = (): VerticalNavItemsType => {
   return [
     {
+      sectionTitle: 'User Interface'
+    },
+    {
       title: 'Dashboard',
       icon: HomeOutline,
       path: '/'
@@ -26,34 +29,6 @@ const navigation = (): VerticalNavItemsType => {
       icon: AccountCogOutline,
       path: '/account-settings'
     },
-    {
-      sectionTitle: 'User Interface'
-    },
-    {
-      title: 'Typography',
-      icon: FormatLetterCase,
-      path: '/typography'
-    },
-    {
-      title: 'Icons',
-      path: '/icons',
-      icon: GoogleCirclesExtended
-    },
-    {
-      title: 'Cards',
-      icon: CreditCardOutline,
-      path: '/cards'
-    },
-    {
-      title: 'Tables',
-      icon: Table,
-      path: '/tables'
-    },
-    {
-      icon: CubeOutline,
-      title: 'Form Layouts',
-      path: '/form-layouts'
-    }
   ]
 }
 

@@ -1,4 +1,4 @@
-import { SyntheticEvent, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
@@ -15,6 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import ClassDetail from 'src/views/class-details/TabClassInformation'
 import StudentOfClass from 'src/views/class-details/TabStudentOfClass'
 import { useRouter } from 'next/router'
+import ErrorFetch from '../fetchError'
 
 const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
     [theme.breakpoints.down('md')]: {
@@ -34,50 +35,80 @@ const TabName = styled('span')(({ theme }) => ({
     }
 }))
 
+const isValidClassId = (classId: any) => {
+    if (typeof classId !== 'string') {
+        return false;
+    }
+    if (classId.length !== 24) {
+        return false;
+    }
+    const isHex = /^[0-9a-fA-F]+$/.test(classId);
+    if (!isHex) {
+        return false;
+    }
+    return true;
+};
+
 const ClassSettings = () => {
-    const [value, setValue] = useState<string>('details')
+    const [value, setValue] = useState<string>('details');
+    const [error, setError] = useState<boolean | null>(null);
     const router = useRouter();
     const { class_id } = router.query;
+
     const handleChange = (event: SyntheticEvent, newValue: string) => {
         setValue(newValue)
     }
+    useEffect(() => {
+        if (class_id === undefined) return;
 
-    return (
-        <Card>
-            <TabContext value={value}>
-                <TabList
-                    onChange={handleChange}
-                    aria-label='account-settings tabs'
-                    sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}` }}
-                >
-                    <Tab
-                        value='details'
-                        label={
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <AccountOutline />
-                                <TabName>Class Information</TabName>
-                            </Box>
-                        }
-                    />
-                    <Tab
-                        value='students'
-                        label={
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <LockOpenOutline />
-                                <TabName>Students and Mapping</TabName>
-                            </Box>
-                        }
-                    />
-                </TabList>
-                <TabPanel sx={{ p: 0 }} value='details'>
-                    <ClassDetail class_id={class_id as string} />
-                </TabPanel>
-                <TabPanel sx={{ p: 0 }} value='students'>
-                    <StudentOfClass />
-                </TabPanel>
-            </TabContext>
-        </Card>
-    )
+        if (isValidClassId(class_id as string)) {
+            setError(false);
+        }
+        else {
+            setError(true);
+        }
+    }, [class_id]);
+
+    if (error === null) { return null; }
+    if (error === true) { return <ErrorFetch />; }
+    else {
+        return (
+            <Card>
+                <TabContext value={value}>
+                    <TabList
+                        onChange={handleChange}
+                        aria-label='account-settings tabs'
+                        sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}` }}
+                    >
+                        <Tab
+                            value='details'
+                            label={
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <AccountOutline />
+                                    <TabName>Class Information</TabName>
+                                </Box>
+                            }
+                        />
+                        <Tab
+                            value='students'
+                            label={
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <LockOpenOutline />
+                                    <TabName>Students and Mapping</TabName>
+                                </Box>
+                            }
+                        />
+                    </TabList>
+                    <TabPanel sx={{ p: 0 }} value='details'>
+                        <ClassDetail class_id={class_id as string} />
+                    </TabPanel>
+                    <TabPanel sx={{ p: 0 }} value='students'>
+                        <StudentOfClass class_id={class_id as string} />
+                    </TabPanel>
+                </TabContext>
+            </Card>
+        )
+    }
 }
 
 export default ClassSettings

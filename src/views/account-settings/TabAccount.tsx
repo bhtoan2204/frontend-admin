@@ -111,7 +111,6 @@ const TabAccount = () => {
     const updateData = await fetchUpdateProfile(profile.fullname, profile.birthday, getCookie('accessToken') as string);
 
     if (updateData.status === 201) {
-      console.log()
       setSeverity('success');
       setContent(updateData.data.message);
       setOpenAlert(true);
@@ -125,7 +124,6 @@ const TabAccount = () => {
 
   const getProfile = async () => {
     const response = await fetchProfile(getCookie('accessToken') as string);
-    console.log(response);
     if (response.status === 200) {
       return response.data;
     }
