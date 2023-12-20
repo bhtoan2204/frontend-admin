@@ -99,6 +99,7 @@ const TabAccount = () => {
         },
         body: formData
       })
+      console.log(response);
       if (response.status !== 201) {
         const data = await response.json();
         setSeverity('error');
@@ -111,6 +112,8 @@ const TabAccount = () => {
     const updateData = await fetchUpdateProfile(profile.fullname, profile.birthday, getCookie('accessToken') as string);
 
     if (updateData.status === 201) {
+      // console.log(profile)
+      localStorage.setItem('fullName', profile.fullname);
       setSeverity('success');
       setContent(updateData.data.message);
       setOpenAlert(true);
@@ -141,9 +144,12 @@ const TabAccount = () => {
           setProfile(data);
           if (data.avatar !== null) {
             setImgSrc(data.avatar);
+            localStorage.setItem('avatar', data.avatar);
+
           }
           else {
             setImgSrc('/images/avatars/1.png');
+            localStorage.setItem('avatar', '/images/avatars/1.png');
           }
           setLoading(false);
         } else {
