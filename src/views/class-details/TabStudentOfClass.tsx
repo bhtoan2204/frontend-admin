@@ -1,8 +1,20 @@
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
-import { ChangeEvent, useEffect, useState } from "react";
+import { Box, Button, ButtonProps, Modal, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography, styled } from "@mui/material";
+import { ChangeEvent, ElementType, useEffect, useState } from "react";
 import { fetchStudentOfClass } from "src/pages/api/classManage/getStudent";
 import { mapStudentManually } from "src/pages/api/userManage/mapStudentManually";
 import { getCookie } from "src/utils/cookies";
+
+const style = {
+    position: 'absolute' as 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
 
 interface StudentData {
     student_id: string;
@@ -16,6 +28,13 @@ interface StudentData {
     }
 }
 
+const ButtonStyled = styled(Button)<ButtonProps & { component?: ElementType; htmlFor?: string }>(({ theme }) => ({
+    [theme.breakpoints.down('sm')]: {
+        width: '100%',
+        textAlign: 'center'
+    }
+}))
+
 interface ClassDetailProps {
     class_id: string;
 }
@@ -26,7 +45,11 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
     const [rowsPerPage, setRowsPerPage] = useState<number>(5);
     const [editableStudentIds, setEditableStudentIds] = useState<{ [key: string]: boolean }>({});
     const [editedStudentIds, setEditedStudentIds] = useState<{ [key: string]: string }>({});
-
+    const [selectedFile, setSelectedFile] = useState<string | null>(null);
+    const [file, setFile] = useState<File | null>(null);
+    const [open, setOpen] = useState(false);
+    const [content, setContent] = useState<string>('');
+    const [isUpdate, setIsUpdate] = useState<boolean>(false);
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage);
@@ -64,6 +87,44 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
         setEditedStudentIds((prevEditedStudentIds) => ({ ...prevEditedStudentIds, [studentId]: '' }));
     };
 
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const fileInput = event.target;
+        if (fileInput.files && fileInput.files.length > 0) {
+            const fileName = fileInput.files[0].name;
+            setSelectedFile(fileName);
+            setFile(fileInput.files[0]);
+        } else {
+            setSelectedFile(null);
+        }
+    };
+
+    const handleConfirm = async () => {
+        if (file === null) return;
+        const formData = new FormData();
+        formData.append('sheet', file);
+        const accessToken = getCookie('accessToken');
+        const data = await fetch(`http://localhost:8080/admin/class/mapStudentByExcel/${class_id}`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": "Bearer " + accessToken,
+            },
+            body: formData
+        });
+
+        if (data.ok) {
+            const response = await data.json();
+            setContent(response.message);
+        }
+        else {
+            const error = await data.json();
+            setContent(error.message);
+        }
+        setIsUpdate(!isUpdate);
+        setOpen(true);
+    }
+
+    const handleClose = () => setOpen(false);
+
     useEffect(() => {
         if (class_id) {
             const fetchStudentData = async () => {
@@ -75,11 +136,41 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
             }
             fetchStudentData();
         }
-    }, [class_id, page, rowsPerPage, editedStudentIds]);
+    }, [class_id, page, rowsPerPage, editedStudentIds, isUpdate]);
 
     return (
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer component={Paper}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'left' }}>
+                    <TextField
+                        id="outlined-basic"
+                        label="File URL"
+                        value={selectedFile || ''}
+                        variant="outlined"
+                        sx={{ margin: 2 }}
+                        disabled
+                        InputLabelProps={{ shrink: selectedFile !== null }}
+                    />
+                    <Box sx={{ display: 'flex', alignItems: 'center', margin: 2 }}>
+                        <ButtonStyled
+                            component='label'
+                            variant='contained'
+                            htmlFor='account-settings-upload-image'
+                        >
+                            Browse Excel
+                            <input
+                                hidden
+                                type='file'
+                                onChange={handleFileChange}
+                                accept='.xlsx, .csv'
+                                id='account-settings-upload-image'
+                            />
+                        </ButtonStyled>
+                        <Button variant="contained" color="primary" onClick={handleConfirm} sx={{ margin: 2 }}>
+                            Confirm
+                        </Button>
+                    </Box>
+                </Box>
                 <Table sx={{ minWidth: 650 }} aria-label='simple table'>
                     <TableHead>
                         <TableRow>
@@ -137,7 +228,7 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
 
                     </TableBody>
                 </Table>
-                <Button>Browse File</Button>
+
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 20]}
                     component='div'
@@ -148,6 +239,21 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </TableContainer>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        Notification
+                    </Typography>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        {content}
+                    </Typography>
+                </Box>
+            </Modal>
         </Paper >
     );
 }
