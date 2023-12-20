@@ -20,6 +20,6 @@ export const fetchLogin = async (email: string, password: string) => {
             return { errorData, status: response.status };
         }
     } catch (error) {
-        return error
+        return { error, status: 500 };
     }
 }

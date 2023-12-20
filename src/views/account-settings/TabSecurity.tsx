@@ -1,10 +1,7 @@
-// ** React Imports
 import { ChangeEvent, MouseEvent, useState } from 'react'
 
-// ** MUI Imports
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
-import Avatar from '@mui/material/Avatar'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import InputLabel from '@mui/material/InputLabel'
@@ -23,7 +20,7 @@ import KeyOutline from 'mdi-material-ui/KeyOutline'
 import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 import Close from 'mdi-material-ui/Close'
-import { fetchChangePassword } from 'src/pages/api/user/changePassword'
+import { fetchChangePassword } from 'src/api/user/changePassword'
 import { getCookie } from 'src/utils/cookies'
 
 interface State {

@@ -9,7 +9,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import { useRouter } from 'next/router';
-import { fetchClasses } from 'src/pages/api/classManage/getClasses';
+import { fetchClasses } from 'src/api/classManage/getClasses';
 import { getCookie } from 'src/utils/cookies';
 
 

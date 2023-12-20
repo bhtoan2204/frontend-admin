@@ -1,7 +1,7 @@
 import { Box, Button, ButtonProps, Modal, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography, styled } from "@mui/material";
 import { ChangeEvent, ElementType, useEffect, useState } from "react";
-import { fetchStudentOfClass } from "src/pages/api/classManage/getStudent";
-import { mapStudentManually } from "src/pages/api/userManage/mapStudentManually";
+import { fetchStudentOfClass } from "src/api/classManage/getStudent";
+import { mapStudentManually } from "src/api/userManage/mapStudentManually";
 import { getCookie } from "src/utils/cookies";
 
 const style = {

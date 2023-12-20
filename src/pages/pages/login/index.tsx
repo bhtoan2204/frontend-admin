@@ -38,7 +38,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
-import { fetchLogin } from 'src/pages/api/auth/login'
+import { fetchLogin } from 'src/api/auth/login'
 import { setCookie } from 'src/utils/cookies'
 
 
@@ -91,7 +91,7 @@ const LoginPage = () => {
   const handleLogin = async () => {
     try {
       const data = await fetchLogin(values.email, values.password);
-      if ((data as { status: number }).status === 200) {
+      if (data.status === 200) {
         setCookie('accessToken', (data as { data: { accessToken: string } }).data.accessToken, 1);
         setCookie('refreshToken', (data as { data: { refreshToken: string } }).data.refreshToken, 3);
         router.push('/')
@@ -100,7 +100,7 @@ const LoginPage = () => {
         setError((data as { errorData: { message: string } }).errorData.message)
       }
     } catch (error) {
-      setError(error as string | null);
+      setError("Error occurs while login: " + error);
     }
   }
 

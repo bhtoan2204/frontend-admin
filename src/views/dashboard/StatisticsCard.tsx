@@ -19,7 +19,7 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 
 // ** Types
 import { ThemeColor } from 'src/@core/layouts/types'
-import { fetchStatistics } from 'src/pages/api/statistics'
+import { fetchStatistics } from 'src/api/statistics'
 import { getCookie } from 'src/utils/cookies'
 
 interface DataType {

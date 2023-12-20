@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { fetchRefresh } from './pages/api/auth/refresh';
+import { fetchRefresh } from './api/auth/refresh';
+
 
 export async function middleware(request: NextRequest) {
     const accessToken = request.cookies.get('accessToken');

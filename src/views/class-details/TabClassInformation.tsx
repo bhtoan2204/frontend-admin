@@ -9,10 +9,9 @@ import { Close, PeopleAltOutlined } from "@mui/icons-material";
 import format from 'date-fns/format';
 import { getCookie } from "src/utils/cookies";
 import { TimerOutline } from "mdi-material-ui";
-import { fetchActiveClass } from "src/pages/api/classManage/activeClass";
-import { fetchClassDetail } from "src/pages/api/classManage/getClassDetails";
-import ErrorFetch from "src/pages/fetchError";
-import { fetchTeacherOfClass } from "src/pages/api/classManage/getTeacher";
+import { fetchActiveClass } from "src/api/classManage/activeClass";
+import { fetchClassDetail } from "src/api/classManage/getClassDetails";
+import { fetchTeacherOfClass } from "src/api/classManage/getTeacher";
 
 const ImgStyled = styled('img')(({ theme }) => ({
     width: 250,

@@ -22,8 +22,8 @@ import DatePicker from 'react-datepicker'
 
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
 import { getCookie } from 'src/utils/cookies'
-import { fetchProfile } from 'src/pages/api/user/getProfile'
-import { fetchUpdateProfile } from 'src/pages/api/user/updateProfile'
+import { fetchProfile } from 'src/api/user/getProfile'
+import { fetchUpdateProfile } from 'src/api/user/updateProfile'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,

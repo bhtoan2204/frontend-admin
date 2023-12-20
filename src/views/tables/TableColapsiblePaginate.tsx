@@ -16,9 +16,9 @@ import TablePagination from "@mui/material/TablePagination";
 import { useRouter } from "next/router";
 import { TextField } from "@mui/material";
 import { Search } from "@mui/icons-material";
-import { fetchGetUserPerPage } from "src/pages/api/userManage/getUserPerPage";
+import { fetchGetUserPerPage } from "src/api/userManage/getUserPerPage";
 import { getCookie } from "src/utils/cookies";
-import { fetchSearchUserPerPage } from "src/pages/api/userManage/searchUser";
+import { fetchSearchUserPerPage } from "src/api/userManage/searchUser";
 
 interface RowType {
     id: string,
