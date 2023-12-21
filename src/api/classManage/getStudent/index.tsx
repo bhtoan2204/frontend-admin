@@ -1,6 +1,6 @@
 export const fetchStudentOfClass = async (class_id: string, page: number, itemPerPage: number, accessToken: string) => {
     try {
-        const res = await fetch(`http://localhost:8080/admin/class/getStudents`, {
+        const res = await fetch(`process.env.API_HOST/admin/class/getStudents`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -1,6 +1,6 @@
 export const fetchSearchUserPerPage = async (text: string, page: number, perPage: number, accessToken: string) => {
     try {
-        const apiResponse = await fetch('http://localhost:8080/admin/accounts/elasticSearchAccounts', {
+        const apiResponse = await fetch(process.env.API_HOST + '/admin/accounts/elasticSearchAccounts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

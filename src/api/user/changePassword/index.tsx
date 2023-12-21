@@ -3,7 +3,7 @@ export const fetchChangePassword = async (
     rewrite_password: string, accessToken: string) => {
     try {
 
-        const apiResponse = await fetch('http://localhost:8080/user/change_password', {
+        const apiResponse = await fetch(process.env.API_HOST + '/user/change_password', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

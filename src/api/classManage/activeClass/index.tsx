@@ -1,6 +1,6 @@
 export const fetchActiveClass = async (class_id: string, accessToken: string) => {
     try {
-        const apiResponse = await fetch(`http://localhost:8080/admin/class/activateClass/${class_id}`, {
+        const apiResponse = await fetch(`process.env.API_HOST/admin/class/activateClass/${class_id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

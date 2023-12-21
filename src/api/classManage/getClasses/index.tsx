@@ -2,7 +2,7 @@ export const fetchClasses = async (page: number, itemPerPage: number,
     is_active: boolean | null, is_descending: boolean | null,
     accessToken: string) => {
     try {
-        const apiResponse = await fetch('http://localhost:8080/admin/class/getClasses', {
+        const apiResponse = await fetch(process.env.API_HOST + '/admin/class/getClasses', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

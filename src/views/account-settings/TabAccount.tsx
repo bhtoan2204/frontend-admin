@@ -92,7 +92,7 @@ const TabAccount = () => {
     if (image !== null) {
       formData.append('avatar', image);
       const accessToken = getCookieCustom('accessToken');
-      const response = await fetch('http://localhost:8080/user/upload_avatar', {
+      const response = await fetch(process.env.API_HOST + '/user/upload_avatar', {
         method: 'PATCH',
         headers: {
           'Authorization': 'Bearer ' + accessToken,

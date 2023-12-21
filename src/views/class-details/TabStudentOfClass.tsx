@@ -103,7 +103,7 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
         const formData = new FormData();
         formData.append('sheet', file);
         const accessToken = getCookieCustom('accessToken');
-        const data = await fetch(`http://localhost:8080/admin/class/mapStudentByExcel/${class_id}`, {
+        const data = await fetch(process.env.API_HOST + `/admin/class/mapStudentByExcel/${class_id}`, {
             method: "PATCH",
             headers: {
                 "Authorization": "Bearer " + accessToken,
@@ -162,7 +162,7 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
                                 hidden
                                 type='file'
                                 onChange={handleFileChange}
-                                accept='.xlsx, .csv'
+                                accept='.csv'
                                 id='account-settings-upload-image'
                             />
                         </ButtonStyled>
