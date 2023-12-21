@@ -1,6 +1,6 @@
 export const fetchUserDetail = async (user_id: string, accessToken: string) => {
     try {
-        const apiResponse = await fetch(`process.env.API_HOST/admin/accounts/userDetail/${user_id}`, {
+        const apiResponse = await fetch(`process.env.NEXT_PUBLIC_API_HOST/admin/accounts/userDetail/${user_id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

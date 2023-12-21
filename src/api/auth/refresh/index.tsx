@@ -1,6 +1,6 @@
 export const fetchRefresh = async (refreshToken: string) => {
     try {
-        const apiResponse = await fetch(process.env.API_HOST + '/auth/refresh', {
+        const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_HOST + '/auth/refresh', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

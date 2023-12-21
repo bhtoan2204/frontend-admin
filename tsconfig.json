@@ -30,8 +30,9 @@
     }
   },
   "include": [
-    "src"
-, "src/middleware.ts"  ],
+    "src", 
+    "src/middleware.ts"  
+  ],
   "exclude": [
     "node_modules"
   ]

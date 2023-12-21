@@ -103,7 +103,7 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
         const formData = new FormData();
         formData.append('sheet', file);
         const accessToken = getCookieCustom('accessToken');
-        const data = await fetch(process.env.API_HOST + `/admin/class/mapStudentByExcel/${class_id}`, {
+        const data = await fetch(process.env.NEXT_PUBLIC_API_HOST + `/admin/class/mapStudentByExcel/${class_id}`, {
             method: "PATCH",
             headers: {
                 "Authorization": "Bearer " + accessToken,

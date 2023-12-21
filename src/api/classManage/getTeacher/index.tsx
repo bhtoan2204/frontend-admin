@@ -1,6 +1,6 @@
 export const fetchTeacherOfClass = async (class_id: string, accessToken: string) => {
     try {
-        const res = await fetch(`process.env.API_HOST/admin/class/getTeachers`, {
+        const res = await fetch(`process.env.NEXT_PUBLIC_API_HOST/admin/class/getTeachers`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

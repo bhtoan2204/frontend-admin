@@ -1,6 +1,6 @@
 export const fetchUpdateProfile = async (fullname: string, birthday: Date, accessToken: string) => {
     try {
-        const apiResponse = await fetch(process.env.API_HOST + '/user/edit_profile', {
+        const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_HOST + '/user/edit_profile', {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

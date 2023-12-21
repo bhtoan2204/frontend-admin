@@ -1,6 +1,6 @@
 export const fetchProfile = async (accessToken: string) => {
     try {
-        const apiResponse = await fetch(process.env.API_HOST + '/user/profile', {
+        const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_HOST + '/user/profile', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

@@ -92,7 +92,7 @@ const TabAccount = () => {
     if (image !== null) {
       formData.append('avatar', image);
       const accessToken = getCookieCustom('accessToken');
-      const response = await fetch(process.env.API_HOST + '/user/upload_avatar', {
+      const response = await fetch(process.env.NEXT_PUBLIC_API_HOST + '/user/upload_avatar', {
         method: 'PATCH',
         headers: {
           'Authorization': 'Bearer ' + accessToken,
@@ -113,7 +113,6 @@ const TabAccount = () => {
     const updateData = await fetchUpdateProfile(profile.fullname, profile.birthday, getCookieCustom('accessToken') as string);
 
     if (updateData.status === 201) {
-      // console.log(profile)
       setCookieCustom('fullName', profile.fullname, 1);
       setSeverity('success');
       setContent(updateData.data.message);

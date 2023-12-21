@@ -1,6 +1,6 @@
 export const fetchStatistics = async (accessToken: string) => {
     try {
-        const apiResponse = await fetch(process.env.API_HOST + '/admin/accounts/getStatistics', {
+        const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_HOST + '/admin/accounts/getStatistics', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

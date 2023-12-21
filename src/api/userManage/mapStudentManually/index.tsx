@@ -1,6 +1,6 @@
 export const mapStudentManually = async (class_id: string, user_id: string, student_id: string, accessToken: string) => {
     try {
-        const res = await fetch(`process.env.API_HOST/admin/class/manualMapStudentId`, {
+        const res = await fetch(`process.env.NEXT_PUBLIC_API_HOST/admin/class/manualMapStudentId`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

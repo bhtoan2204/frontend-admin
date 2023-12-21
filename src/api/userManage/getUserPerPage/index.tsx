@@ -1,6 +1,6 @@
 export const fetchGetUserPerPage = async (page: number, rowsPerPage: number, accessToken: string) => {
     try {
-        const apiResponse = await fetch(process.env.API_HOST + '/admin/accounts/getUsers', {
+        const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_HOST + '/admin/accounts/getUsers', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
