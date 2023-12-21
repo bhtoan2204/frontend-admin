@@ -1,6 +1,6 @@
 export const fetchActiveClass = async (class_id: string, accessToken: string) => {
     try {
-        const apiResponse = await fetch(`process.env.NEXT_PUBLIC_API_HOST/admin/class/activateClass/${class_id}`, {
+        const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_HOST + `/admin/class/activateClass/${class_id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

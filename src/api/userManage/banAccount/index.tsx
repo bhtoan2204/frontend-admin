@@ -1,6 +1,6 @@
 export const fetchBanAccount = async (user_id: string, accessToken: string) => {
     try {
-        const apiResponse = await fetch(`process.env.NEXT_PUBLIC_API_HOST/admin/accounts/banOrUnbanAccount/${user_id}`, {
+        const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_HOST + `/admin/accounts/banOrUnbanAccount/${user_id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

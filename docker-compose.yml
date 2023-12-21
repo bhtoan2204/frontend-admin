@@ -1,0 +1,9 @@
+version: '3'
+services:
+  frontend-admin:
+    build: ./
+    container_name: frontend-admin
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80

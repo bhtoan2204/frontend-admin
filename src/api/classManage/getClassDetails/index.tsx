@@ -1,5 +1,5 @@
 export const fetchClassDetail = async (class_id: string, accessToken: string) => {
-    const apiResponse = await fetch(`process.env.NEXT_PUBLIC_API_HOST/admin/class/getClassDetail/${class_id}`, {
+    const apiResponse = await fetch(process.env.NEXT_PUBLIC_API_HOST + `/admin/class/getClassDetail/${class_id}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
