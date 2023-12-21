@@ -20,7 +20,7 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 // ** Types
 import { ThemeColor } from 'src/@core/layouts/types'
 import { fetchStatistics } from 'src/api/statistics'
-import { getCookie } from 'src/utils/cookies'
+import { getCookieCustom } from '../../utils/cookies'
 
 interface DataType {
   stats: string
@@ -61,7 +61,7 @@ const StatisticsCard = () => {
 
   const getStatistics = () => {
     const fetchData = (async () => {
-      const data = await fetchStatistics(getCookie('accessToken') as string);
+      const data = await fetchStatistics(getCookieCustom('accessToken') as string);
       if (data.status == 200) {
         const newData: DataType[] = [
           {
@@ -92,6 +92,7 @@ const StatisticsCard = () => {
     getStatistics()
     setIsLoading(false)
   }, [isLoading])
+
   return (
     <Card>
       <CardHeader

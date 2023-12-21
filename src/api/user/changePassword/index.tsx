@@ -19,10 +19,12 @@ export const fetchChangePassword = async (
 
         if (apiResponse.ok) {
             const data = await apiResponse.json();
+
             return { data, status: apiResponse.status };
         }
         else {
             const errorData = await apiResponse.json();
+
             return { errorData, status: apiResponse.status };
         }
     } catch (error) {

@@ -11,13 +11,16 @@ export const fetchStudentOfClass = async (class_id: string, page: number, itemPe
                 page,
                 itemPerPage
             })
-        })
+        });
+
         if (res.ok) {
             const data = await res.json();
+
             return { data, status: res.status };
         }
         else {
             const errorData = await res.json();
+
             return { message: errorData, status: res.status };
         }
     }

@@ -2,10 +2,10 @@ import { Box, Button, ButtonProps, Modal, Paper, Table, TableBody, TableCell, Ta
 import { ChangeEvent, ElementType, useEffect, useState } from "react";
 import { fetchStudentOfClass } from "src/api/classManage/getStudent";
 import { mapStudentManually } from "src/api/userManage/mapStudentManually";
-import { getCookie } from "src/utils/cookies";
+import { getCookieCustom } from "../../utils/cookies";
 
 const style = {
-    position: 'absolute' as 'absolute',
+    position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -71,7 +71,7 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
     const handleSave = async (userId: string, studentId: string) => {
         if (!editedStudentIds[studentId]) return;
         try {
-            const data = await mapStudentManually(class_id, userId, editedStudentIds[studentId], getCookie('accessToken') as string);
+            const data = await mapStudentManually(class_id, userId, editedStudentIds[studentId], getCookieCustom('accessToken') as string);
             if (data.status === 200) {
                 setEditableStudentIds((prevEditableStudentIds) => ({ ...prevEditableStudentIds, [studentId]: false }));
                 setEditedStudentIds((prevEditedStudentIds) => ({ ...prevEditedStudentIds, [studentId]: '' }));
@@ -102,7 +102,7 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
         if (file === null) return;
         const formData = new FormData();
         formData.append('sheet', file);
-        const accessToken = getCookie('accessToken');
+        const accessToken = getCookieCustom('accessToken');
         const data = await fetch(`http://localhost:8080/admin/class/mapStudentByExcel/${class_id}`, {
             method: "PATCH",
             headers: {
@@ -128,7 +128,7 @@ const StudentOfClass: React.FC<ClassDetailProps> = ({ class_id }) => {
     useEffect(() => {
         if (class_id) {
             const fetchStudentData = async () => {
-                const accessToken = getCookie('accessToken');
+                const accessToken = getCookieCustom('accessToken');
                 const { data, status } = await fetchStudentOfClass(class_id, page + 1, rowsPerPage, accessToken as string);
                 if (status === 201) {
                     setRows(data);

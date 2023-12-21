@@ -17,7 +17,7 @@ import { useRouter } from "next/router";
 import { TextField } from "@mui/material";
 import { Search } from "@mui/icons-material";
 import { fetchGetUserPerPage } from "src/api/userManage/getUserPerPage";
-import { getCookie } from "src/utils/cookies";
+import { getCookieCustom } from "../../utils/cookies";
 import { fetchSearchUserPerPage } from "src/api/userManage/searchUser";
 
 interface RowType {
@@ -156,7 +156,7 @@ export default function TableColapsiblePaginate() {
     };
 
     const handleChangeRowsPerPage = (
-        event: React.ChangeEvent<HTMLInputElement>
+        event: ChangeEvent<HTMLInputElement>
     ) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
@@ -164,18 +164,18 @@ export default function TableColapsiblePaginate() {
 
     const handleSearch = async () => {
         if (searchValue === '') {
-            const data = await fetchGetUserPerPage(page + 1, rowsPerPage, getCookie('accessToken') as string);
+            const data = await fetchGetUserPerPage(page + 1, rowsPerPage, getCookieCustom('accessToken') as string);
             setRows(data);
         }
         else {
-            const data = await fetchSearchUserPerPage(searchValue, page + 1, rowsPerPage, getCookie('accessToken') as string);
+            const data = await fetchSearchUserPerPage(searchValue, page + 1, rowsPerPage, getCookieCustom('accessToken') as string);
             setRows(data);
         }
     }
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const data = await fetchGetUserPerPage(page + 1, rowsPerPage, getCookie('accessToken') as string);
+            const data = await fetchGetUserPerPage(page + 1, rowsPerPage, getCookieCustom('accessToken') as string);
             if (data) {
                 const arrData = data;
                 setRows(arrData);

@@ -12,10 +12,12 @@ export const fetchTeacherOfClass = async (class_id: string, accessToken: string)
         })
         if (res.ok) {
             const data = await res.json();
+
             return { data, status: res.status };
         }
         else {
             const errorData = await res.json();
+
             return { message: errorData, status: res.status };
         }
     }

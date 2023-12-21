@@ -39,7 +39,7 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
 import { fetchLogin } from 'src/api/auth/login'
-import { setCookie } from 'src/utils/cookies'
+import { setCookieCustom } from '../../../utils/cookies'
 
 
 interface State {
@@ -92,8 +92,8 @@ const LoginPage = () => {
     try {
       const data = await fetchLogin(values.email, values.password);
       if (data.status === 200) {
-        setCookie('accessToken', (data as { data: { accessToken: string } }).data.accessToken, 1);
-        setCookie('refreshToken', (data as { data: { refreshToken: string } }).data.refreshToken, 3);
+        setCookieCustom('accessToken', (data as { data: { accessToken: string } }).data.accessToken, 1);
+        setCookieCustom('refreshToken', (data as { data: { refreshToken: string } }).data.refreshToken, 3);
         router.push('/')
       }
       else {

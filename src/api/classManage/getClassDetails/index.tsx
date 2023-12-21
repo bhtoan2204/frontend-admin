@@ -9,10 +9,12 @@ export const fetchClassDetail = async (class_id: string, accessToken: string) =>
     });
     if (apiResponse.ok) {
         const data = await apiResponse.json();
+
         return data;
     }
     else {
         const errorData = await apiResponse.json();
+
         return errorData;
     }
 };

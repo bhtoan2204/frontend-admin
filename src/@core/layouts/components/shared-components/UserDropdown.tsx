@@ -15,8 +15,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import LogoutVariant from 'mdi-material-ui/LogoutVariant'
 import AccountOutline from 'mdi-material-ui/AccountOutline'
-import { getCookie, removeCookie } from 'src/utils/cookies'
-import { fetchUserDetail } from 'src/api/userManage/getUserDetail'
+import { getCookieCustom, removeCookieCustom, setCookieCustom } from '../../../../utils/cookies'
 import { fetchProfile } from 'src/api/user/getProfile'
 
 // ** Styled Components
@@ -29,9 +28,9 @@ const BadgeContentSpan = styled('span')(({ theme }) => ({
 }))
 
 const UserDropdown = () => {
-  // ** States
+
   const [anchorEl, setAnchorEl] = useState<Element | null>(null)
-  // ** Hooks
+
   const router = useRouter()
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
@@ -46,17 +45,17 @@ const UserDropdown = () => {
   }
 
   const handleLogout = async () => {
-    removeCookie('accessToken')
-    removeCookie('refreshToken')
+    removeCookieCustom('accessToken')
+    removeCookieCustom('refreshToken')
     router.push('/pages/login')
   }
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchProfile(getCookie('accessToken') as string);
+      const data = await fetchProfile(getCookieCustom('accessToken') as string);
       if (data.status === 200) {
-        localStorage.setItem('fullName', data.data.fullname);
-        localStorage.setItem('avatar', data.data.avatar);
+        setCookieCustom('fullName', data.data.fullname, 1);
+        setCookieCustom('avatar', data.data.avatar, 1);
       }
     }
     fetchData();
@@ -89,7 +88,7 @@ const UserDropdown = () => {
           alt='John Doe'
           onClick={handleDropdownOpen}
           sx={{ width: 40, height: 40 }}
-          src={localStorage.getItem('avatar') as string ? localStorage.getItem('avatar') as string : '/images/avatars/1.png'}
+          src={getCookieCustom('avatar') as string ? getCookieCustom('avatar') as string : '/images/avatars/1.png'}
         />
       </Badge>
       <Menu
@@ -107,10 +106,10 @@ const UserDropdown = () => {
               badgeContent={<BadgeContentSpan />}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
             >
-              <Avatar alt='John Doe' src={localStorage.getItem('avatar') as string ? localStorage.getItem('avatar') as string : '/images/avatars/1.png'} sx={{ width: '2.5rem', height: '2.5rem' }} />
+              <Avatar alt='John Doe' src={getCookieCustom('avatar') as string ? getCookieCustom('avatar') as string : '/images/avatars/1.png'} sx={{ width: '2.5rem', height: '2.5rem' }} />
             </Badge>
             <Box sx={{ display: 'flex', marginLeft: 3, alignItems: 'flex-start', flexDirection: 'column' }}>
-              <Typography sx={{ fontWeight: 600 }}>{localStorage.getItem('fullName')}</Typography>
+              <Typography sx={{ fontWeight: 600 }}>{getCookieCustom('fullName')}</Typography>
               <Typography variant='body2' sx={{ fontSize: '0.8rem', color: 'text.disabled' }}>
                 Admin
               </Typography>

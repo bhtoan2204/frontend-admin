@@ -13,10 +13,12 @@ export const mapStudentManually = async (class_id: string, user_id: string, stud
             })
         })
         if (res.ok) {
+
             return { status: res.status };
         }
         else {
             const errorData = await res.json();
+
             return { message: errorData, status: res.status };
         }
     }

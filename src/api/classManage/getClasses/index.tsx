@@ -19,10 +19,12 @@ export const fetchClasses = async (page: number, itemPerPage: number,
 
         if (apiResponse.ok) {
             const data = await apiResponse.json();
+
             return { data, status: apiResponse.status };
         }
         else {
             const errorData = await apiResponse.json();
+
             return { message: errorData, status: apiResponse.status };
         }
     }

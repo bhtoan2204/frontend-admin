@@ -16,10 +16,12 @@ export const fetchSearchUserPerPage = async (text: string, page: number, perPage
 
         if (apiResponse.ok) {
             const data = await apiResponse.json();
+
             return data;
         }
         else {
             const errorData = await apiResponse.json();
+
             return errorData;
         }
     }

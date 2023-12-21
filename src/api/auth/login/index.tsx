@@ -13,10 +13,12 @@ export const fetchLogin = async (email: string, password: string) => {
         });
         if (response.ok) {
             const data = await response.json();
+
             return { data, status: response.status };
         }
         else {
             const errorData = await response.json();
+
             return { errorData, status: response.status };
         }
     } catch (error) {

@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
-import { Alert, AlertTitle, Card, CardHeader, CircularProgress, Divider, IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, styled } from "@mui/material";
+import { Alert, AlertTitle, Card, CardHeader, Divider, IconButton, InputAdornment, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, styled } from "@mui/material";
 import AccountOutline from "mdi-material-ui/AccountOutline";
 import { Close, PeopleAltOutlined } from "@mui/icons-material";
 import format from 'date-fns/format';
-import { getCookie } from "src/utils/cookies";
+import { getCookieCustom } from "../../utils/cookies";
 import { TimerOutline } from "mdi-material-ui";
 import { fetchActiveClass } from "src/api/classManage/activeClass";
 import { fetchClassDetail } from "src/api/classManage/getClassDetails";
@@ -47,13 +47,14 @@ const TeacherTable: React.FC<ClassDetailProps> = ({ class_id }) => {
     const router = useRouter();
     useEffect(() => {
         const fetchTeachers = async () => {
-            const data = await fetchTeacherOfClass(class_id as string, getCookie('accessToken') as string);
+            const data = await fetchTeacherOfClass(class_id as string, getCookieCustom('accessToken') as string);
             if (data.status === 201) {
                 setTeacherData(data.data);
             }
         }
         fetchTeachers();
-    }, [class_id])
+    }, [class_id]);
+
     return (
         <Card sx={{ marginTop: 5 }}>
             <CardHeader title='Teachers' titleTypographyProps={{ variant: 'h6' }} />
@@ -120,7 +121,7 @@ const ClassDetail: React.FC<ClassDetailProps> = ({ class_id }) => {
     const [classDetail, setClassDetail] = useState<ClassDetailData | null>(null);
 
     const activeClass = async () => {
-        const data = await fetchActiveClass(class_id as string, getCookie('accessToken') as string);
+        const data = await fetchActiveClass(class_id as string, getCookieCustom('accessToken') as string);
         if (data.status === 200) {
             setClickActive(!clickActive);
             setOpenAlert(true);
@@ -138,7 +139,7 @@ const ClassDetail: React.FC<ClassDetailProps> = ({ class_id }) => {
         if (class_id != undefined) {
             const fetchUserData = async () => {
                 try {
-                    const data = await fetchClassDetail(class_id as string, getCookie('accessToken') as string);
+                    const data = await fetchClassDetail(class_id as string, getCookieCustom('accessToken') as string);
                     console.log(data);
                     if (data) {
                         setClassDetail(data);

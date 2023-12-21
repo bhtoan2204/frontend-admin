@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState, ElementType, ChangeEvent, SyntheticEvent, forwardRef, useEffect } from 'react'
+import { useState, ElementType, ChangeEvent, forwardRef, useEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -21,7 +21,7 @@ import Close from 'mdi-material-ui/Close'
 import DatePicker from 'react-datepicker'
 
 import DatePickerWrapper from 'src/@core/styles/libs/react-datepicker'
-import { getCookie } from 'src/utils/cookies'
+import { getCookieCustom, setCookieCustom } from '../../utils/cookies'
 import { fetchProfile } from 'src/api/user/getProfile'
 import { fetchUpdateProfile } from 'src/api/user/updateProfile'
 
@@ -91,7 +91,7 @@ const TabAccount = () => {
     const formData = new FormData();
     if (image !== null) {
       formData.append('avatar', image);
-      const accessToken = getCookie('accessToken');
+      const accessToken = getCookieCustom('accessToken');
       const response = await fetch('http://localhost:8080/user/upload_avatar', {
         method: 'PATCH',
         headers: {
@@ -105,15 +105,16 @@ const TabAccount = () => {
         setSeverity('error');
         setContent(data.error);
         setOpenAlert(true);
+
         return;
       }
     }
 
-    const updateData = await fetchUpdateProfile(profile.fullname, profile.birthday, getCookie('accessToken') as string);
+    const updateData = await fetchUpdateProfile(profile.fullname, profile.birthday, getCookieCustom('accessToken') as string);
 
     if (updateData.status === 201) {
       // console.log(profile)
-      localStorage.setItem('fullName', profile.fullname);
+      setCookieCustom('fullName', profile.fullname, 1);
       setSeverity('success');
       setContent(updateData.data.message);
       setOpenAlert(true);
@@ -126,7 +127,7 @@ const TabAccount = () => {
   }
 
   const getProfile = async () => {
-    const response = await fetchProfile(getCookie('accessToken') as string);
+    const response = await fetchProfile(getCookieCustom('accessToken') as string);
     if (response.status === 200) {
       return response.data;
     }
@@ -144,12 +145,12 @@ const TabAccount = () => {
           setProfile(data);
           if (data.avatar !== null) {
             setImgSrc(data.avatar);
-            localStorage.setItem('avatar', data.avatar);
+            setCookieCustom('avatar', data.avatar, 1);
 
           }
           else {
             setImgSrc('/images/avatars/1.png');
-            localStorage.setItem('avatar', '/images/avatars/1.png');
+            setCookieCustom('avatar', data.avatar, 1);
           }
           setLoading(false);
         } else {

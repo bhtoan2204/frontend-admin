@@ -10,11 +10,13 @@ export const fetchBanAccount = async (user_id: string, accessToken: string) => {
         });
 
         if (apiResponse.ok) {
-            const data = await apiResponse.json()
+            const data = await apiResponse.json();
+
             return { data, status: apiResponse.status };
         }
         else {
             const errorData = await apiResponse.json();
+
             return { errorData, status: apiResponse.status };
         }
     }

@@ -11,10 +11,12 @@ export const fetchStatistics = async (accessToken: string) => {
 
         if (apiResponse.ok) {
             const data = await apiResponse.json();
+
             return { data, status: apiResponse.status };
         }
         else {
             const data = await apiResponse.json();
+
             return { data, status: apiResponse.status };
         }
     }

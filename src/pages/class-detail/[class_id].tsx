@@ -46,6 +46,7 @@ const isValidClassId = (classId: any) => {
     if (!isHex) {
         return false;
     }
+
     return true;
 };
 

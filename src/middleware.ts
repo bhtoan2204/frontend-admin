@@ -9,11 +9,13 @@ export async function middleware(request: NextRequest) {
     const url = request.nextUrl.clone();
 
     if (baseURL === '/pages/login/' && accessToken !== undefined && refreshToken !== undefined) {
-        url.pathname = '/'
+        url.pathname = '/';
+
         return NextResponse.redirect(url);
     }
     if (baseURL !== '/pages/login/' && accessToken === undefined && refreshToken === undefined) {
-        url.pathname = '/pages/login/'
+        url.pathname = '/pages/login/';
+
         return NextResponse.redirect(url);
     }
 
@@ -24,6 +26,7 @@ export async function middleware(request: NextRequest) {
                 `accessToken=${response.data.accessToken}; Max-Age=${1 * 24 * 60 * 60}; Path=/;`,
                 `refreshToken=${response.data.refreshToken}; Max-Age=${3 * 24 * 60 * 60}; Path=/;`,
             ];
+
             return NextResponse.next({
                 headers: {
                     'Set-Cookie': setCookieHeaders as any,
@@ -34,6 +37,7 @@ export async function middleware(request: NextRequest) {
             const setCookieHeaders = [
                 `refreshToken=; Max-Age=${0}; Path=/;`,
             ];
+
             return NextResponse.redirect(url, {
                 headers: {
                     'Set-Cookie': setCookieHeaders as any,

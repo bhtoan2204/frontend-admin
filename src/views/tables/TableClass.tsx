@@ -10,7 +10,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 import { useRouter } from 'next/router';
 import { fetchClasses } from 'src/api/classManage/getClasses';
-import { getCookie } from 'src/utils/cookies';
+import { getCookieCustom } from '../../utils/cookies';
 
 
 interface Data {
@@ -49,7 +49,7 @@ const ClassManagerTable = () => {
 
   useEffect(() => {
     const fetchDataAndSetRows = async () => {
-      const data = await fetchClasses(page + 1, rowsPerPage, is_active, is_descending, getCookie('accessToken') as string);
+      const data = await fetchClasses(page + 1, rowsPerPage, is_active, is_descending, getCookieCustom('accessToken') as string);
       if (data.status === 201) {
         const classData = data.data.classesWithHostName;
         const totalCount = data.data.totalCount;

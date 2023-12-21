@@ -9,9 +9,9 @@ import EmailOutline from "mdi-material-ui/EmailOutline";
 import { Close } from "@mui/icons-material";
 import ErrorFetch from "../fetchError";
 import format from 'date-fns/format';
-import { fetchBanAccount } from "../api/userManage/banAccount";
-import { getCookie } from "src/utils/cookies";
-import { fetchUserDetail } from "../api/userManage/getUserDetail";
+import { getCookieCustom } from "../../utils/cookies";
+import { fetchBanAccount } from "src/api/userManage/banAccount";
+import { fetchUserDetail } from "src/api/userManage/getUserDetail";
 
 const ImgStyled = styled('img')(({ theme }) => ({
     width: 250,
@@ -52,7 +52,7 @@ const UserDetail = () => {
 
     const banAccount = async () => {
         const { user_id } = router.query;
-        const data = await fetchBanAccount(user_id as string, getCookie('accessToken') as string);
+        const data = await fetchBanAccount(user_id as string, getCookieCustom('accessToken') as string);
 
         if (data.status === 200) {
             setSeverity('success');
@@ -72,7 +72,7 @@ const UserDetail = () => {
         const { user_id } = router.query;
         const fetchUserData = async () => {
             try {
-                const data = await fetchUserDetail(user_id as string, getCookie('accessToken') as string);
+                const data = await fetchUserDetail(user_id as string, getCookieCustom('accessToken') as string);
                 if (data.status === 200) {
                     setProfile(data.data);
                 }
@@ -90,7 +90,7 @@ const UserDetail = () => {
         if (user_id) {
             fetchUserData()
         }
-    }, [user_id, clickBan]);
+    }, [user_id, clickBan, router.query]);
 
     if (loading) {
         return (

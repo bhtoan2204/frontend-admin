@@ -11,10 +11,12 @@ export const fetchRefresh = async (refreshToken: string) => {
 
         if (apiResponse.ok) {
             const data = await apiResponse.json();
+
             return { data, status: apiResponse.status };
         }
         else {
             const errorData = await apiResponse.json();
+
             return { errorData, status: apiResponse.status };
         }
     }

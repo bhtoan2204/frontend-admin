@@ -15,15 +15,18 @@ export const fetchGetUserPerPage = async (page: number, rowsPerPage: number, acc
 
         if (apiResponse.ok) {
             const data = await apiResponse.json();
+
             return data;
         }
         else {
             const errorData = await apiResponse.json();
+
             return errorData;
         }
     }
     catch (error) {
         console.error('Error during refresh:', error);
-        return
+
+        return;
     }
 }
